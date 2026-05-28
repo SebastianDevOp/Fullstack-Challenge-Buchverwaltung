@@ -11,8 +11,9 @@ export const Select = ({ label, name, value, onChange, required, options }: Sele
   return (
     <div className="select-container">
       <label htmlFor={label}>
+        {`${label}: `}
         <select name={name} id={label} value={value} onChange={onChange} required={required}>
-          {options.map((option) => (
+          {options?.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
