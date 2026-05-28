@@ -3,7 +3,7 @@ type ButtonProps = {
   type?: "button" | "submit";
   onClick?: () => void;
   disabled?: boolean;
-  children: string;
+  children: React.ReactNode;
 };
 
 export const Button = ({ variant, type, onClick, disabled, children }: ButtonProps) => {
