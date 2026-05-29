@@ -1,7 +1,9 @@
+@import "tailwindcss";
+
 * {
   box-sizing: border-box;
   margin: 0;
-  padding: 0;
+  padding: 2px;
 }
 
 body {
@@ -111,13 +113,6 @@ select:focus {
   border-color: #0066cc;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-width: 400px;
-  margin-bottom: 32px;
-}
 
 label {
   font-weight: 500;
@@ -131,7 +126,6 @@ button {
   border-radius: 4px;
   font-size: 1rem;
   font-family: inherit;
-  cursor: pointer;
 }
 
 button.primary {

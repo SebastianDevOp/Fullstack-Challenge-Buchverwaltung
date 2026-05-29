@@ -2,19 +2,33 @@ type InputProps = {
   label: string;
   name: string;
   value: string;
-  onChange: () => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: "text";
   required?: boolean;
   error?: string;
 };
 
-export const Input = ({ label, value, onChange, required }: InputProps) => {
+export const Input = ({ label, value, onChange, required, error }: InputProps) => {
   return (
-    <div className="input-container">
-      <label htmlFor={label}>
-        {`${label}: `}
-        <input id={label} type="text" value={value} onChange={onChange} required={required} />
-      </label>
+    <div className="w-full">
+      <div className="relative">
+        <input
+          className="peer w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+          id={label}
+          type="text"
+          value={value}
+          onChange={onChange}
+          required={required}
+          placeholder=" "
+        />
+        <label
+          className="absolute cursor-text bg-white px-1 left-2.5 top-2.5 text-slate-400 text-sm transition-all transform origin-left 
+          peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 peer-focus:scale-90 
+          peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-2.5 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:scale-90"
+          htmlFor={label}
+        >{`${label}`}</label>
+        {error && <p className="text-red-500 text-xs mt-1 ml-1">{error}</p>}
+      </div>
     </div>
   );
 };
