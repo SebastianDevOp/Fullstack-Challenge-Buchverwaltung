@@ -1,4 +1,4 @@
-import { pgTable, serial, text } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer } from "drizzle-orm/pg-core";
 
 export const authors = pgTable("authors", {
   id: serial("id").primaryKey(),
@@ -7,3 +7,14 @@ export const authors = pgTable("authors", {
 
 export type Author = typeof authors.$inferSelect;
 export type NewAuthor = typeof authors.$inferInsert;
+
+export const books = pgTable("books", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  isbn: text("isbn").unique(),
+  year: integer("year"),
+  authorId: integer("authorId").references(() => authors.id),
+});
+
+export type Book = typeof books.$inferInsert;
+export type NewBook = typeof books.$inferSelect;

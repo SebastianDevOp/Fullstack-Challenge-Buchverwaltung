@@ -14,11 +14,11 @@
     "migrate": "drizzle-kit migrate",
     "studio": "drizzle-kit studio",
     "seed": "tsx seed.ts",
-    "db:push": "drizzle-kit push"
+    "migrate:status" : "drizzle-kit check"
   },
   "dependencies": {
     "dotenv": "16.5.0",
-    "drizzle-orm": "0.44.2",
+    "drizzle-orm": "0.45.2",
     "pg": "8.16.0",
     "server-only": "0.0.1"
   },

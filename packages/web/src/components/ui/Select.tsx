@@ -1,5 +1,3 @@
-import React from "react";
-
 type SelectProps = {
   label: string;
   name: string;
@@ -16,7 +14,7 @@ export const Select = ({ label, name, value, onChange, required, options }: Sele
         className="block py-2.5 px-0 w-full text-sm text-gray-400 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
         name={name}
         id={name}
-        value={value ?? ""}
+        value={value ? value : ""}
         onChange={onChange}
         required={required}
       >

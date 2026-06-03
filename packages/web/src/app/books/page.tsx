@@ -1,48 +1,126 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Bookform } from "@/components/BookForm";
-import { useState } from "react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
+type Author = {
+  id: number;
+  name: string;
+};
+
+type Book = {
+  id: number;
+  title: string;
+  authorId: number;
+  isbn?: number;
+  year?: number;
+};
 export default function BooksPage() {
-  const [authors] = useState<Author[]>([
-    { id: 1, name: "J.K. Rowling" },
-    { id: 2, name: "George Orwell" },
-    { id: 3, name: "J.R.R. Tolkien" },
-    { id: 4, name: "Jane Austen" },
-    { id: 5, name: "F. Scott Fitzgerald" },
-    { id: 6, name: "Mary Shelley" },
-    { id: 7, name: "Stephen King" },
-    { id: 8, name: "Agatha Christie" },
-    { id: 9, name: "Isaac Asimov" },
-    { id: 10, name: "Arthur Conan Doyle" },
-  ]);
+  const [formVisibility, setFormVisibility] = useState<boolean>(false);
+  const [authors, setAuthors] = useState<Author[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
 
-  const [books, setBooks] = useState<Book[]>([
-    {
-      id: 1,
-      title: "Harry Potter und der Stein der Weisen",
-      authorId: 1,
-      isbn: 9783551551672,
-      year: 1997,
-    },
-    { id: 2, title: "1984", authorId: 2, isbn: 9783548225623, year: 1949 },
-    { id: 3, title: "Der Herr der Ringe", authorId: 3, isbn: 9783608939849, year: 1954 },
-    { id: 4, title: "Stolz und Vorurteil", authorId: 4, year: 1813 },
-    { id: 5, title: "Der große Gatsby", authorId: 5, year: 1925 },
-    { id: 6, title: "Frankenstein", authorId: 6, year: 1818 },
-    { id: 7, title: "Shining", authorId: 7, year: 1977 },
-    { id: 8, title: "Mord im Orient-Express", authorId: 8, year: 1934 },
-    { id: 9, title: "Foundation", authorId: 9, year: 1951 },
-    { id: 10, title: "Eine Studie in Scharlachrot", authorId: 10, year: 1887 },
-  ]);
-  const handleSubmit = () => {
-    console.log();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const resA = await fetch("/api/authors");
+        const resultA = await resA.json();
+        const resB = await fetch("/api/books");
+        const resultB = await resB.json();
+        const flatBooks = resultB.map((row: any) => row.books);
+        setAuthors(resultA);
+        setBooks(flatBooks);
+        console.log(resultB);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleSubmit = async (newBook: Book) => {
+    const prepBook: Book = {
+      id: Date.now(),
+      title: newBook.title,
+      authorId: newBook.authorId,
+      isbn: newBook.isbn,
+      year: newBook.year,
+    };
+
+    await setBooks((prev) => [...prev, prepBook]);
+    setFormVisibility(!formVisibility);
+  };
+
+  const handleClick = (toDelete: Book) => {
+    setBooks((prev) => prev.filter((book) => book.id !== toDelete.id));
+  };
+
+  const getAuthorName = (id: number) => {
+    const authorById = authors.find((a) => a.id === Number(id));
+
+    return authorById ? authorById.name : "Unbekannt";
   };
 
   return (
     <div>
-      <h1>Bücher</h1>
-      <Bookform authors={authors} onSubmit={handleSubmit} />
+      <div className="flex flex-row gap-6">
+        <Input label={"Suche..."} name={"Suche"} onChange={() => console.log("hallo")} />
+        <Button
+          variant="primary"
+          type="button"
+          disabled={false}
+          children={"Buch hinzufügen"}
+          onClick={() => setFormVisibility(!formVisibility)}
+        />
+      </div>
+      <div className="">
+        <table className="w-full text-left table-auto min-w-max">
+          <thead>
+            <tr>
+              <th className="p-4 border-b border-blue-gray-500 bg-blue-grey-50">Titel</th>
+              <th className="p-4 border-b border-blue-gray-500 bg-blue-grey-50">Autor</th>
+              <th className="p-4 border-b border-blue-gray-500 bg-blue-grey-50">
+                Erscheinungsjahr
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {books.map((book) => {
+              const authorName = getAuthorName(book.authorId);
+
+              return (
+                <tr key={book.id}>
+                  <td className="p-4 border-b ">{book.title}</td>
+                  <td className="p-4 border-b">{authorName}</td>
+                  <td className="p-4 border-b">{book.year}</td>
+                  <button type="button" onClick={() => handleClick(book)}>
+                    X
+                  </button>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div
+        className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 p-6 transition-transform duration-500 ease-in-out"
+        style={{
+          transform: formVisibility ? "translateX(0)" : "translateX(100%)",
+        }}
+      >
+        <Bookform authors={authors} onSubmit={handleSubmit} />
+      </div>
+
+      <div
+        className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-500"
+        style={{
+          opacity: formVisibility ? 1 : 0,
+          pointerEvents: formVisibility ? "auto" : "none",
+        }}
+        onClick={() => setFormVisibility(false)}
+      />
     </div>
   );
 }

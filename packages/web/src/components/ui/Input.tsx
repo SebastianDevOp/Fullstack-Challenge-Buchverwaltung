@@ -1,23 +1,26 @@
 type InputProps = {
   label: string;
   name: string;
-  value: string;
+  value?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: "text";
   required?: boolean;
   error?: string;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 };
 
-export const Input = ({ label, value, onChange, required, error }: InputProps) => {
+export const Input = ({ label, name, value, onChange, required, error, onBlur }: InputProps) => {
   return (
     <div className="w-full">
       <div className="relative">
         <input
           className="peer w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+          name={name}
           id={label}
           type="text"
-          value={value}
+          value={value ? value : ""}
           onChange={onChange}
+          onBlur={onBlur}
           required={required}
           placeholder=" "
         />

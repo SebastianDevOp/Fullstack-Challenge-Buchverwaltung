@@ -1,15 +1,14 @@
 "use client";
-
-import { useState } from "react";
 import { Input } from "./ui/Input";
 import { Select } from "./ui/Select";
 import { Button } from "./ui/Button";
+import { type Errors, useForm } from "@/useForm";
 
 interface BookFormData {
   title?: string;
-  authorId: number;
-  isbn?: number;
-  year?: number;
+  authorId?: string;
+  isbn?: string;
+  year?: string;
 }
 
 export type BookformProps = {
@@ -25,31 +24,27 @@ export const Bookform = ({
   onSubmit,
   submitLabel = "Speichern",
 }: BookformProps) => {
-  const [formData, SetFormData] = useState<BookFormData>(initialValues);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-
-    SetFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    console.log(formData);
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // Hier muss ich noch Schauen was ich genau machen soll
-  };
+  const { formData, handleSubmit, handleChange, handleBlur, touched, errors, noError } =
+    useForm<BookFormData>({
+      initialValue: {
+        title: initialValues?.title,
+        authorId: initialValues?.authorId,
+        isbn: initialValues?.isbn,
+        year: initialValues?.year,
+      },
+      onSubmit: onSubmit,
+      validate: (formData) => {
+        const errors: Errors<typeof formData> = {};
+        if (!formData.title) errors.title = "Titel notwendig";
+        if (!formData.authorId) errors.authorId = "Autor bitte auswählen";
+        return errors;
+      },
+    });
 
   return (
-    <div className="w-full max-w-lg mx-auto mt-12 bg-white rounded-2xl shadow-xl border border-gray-100">
+    <div className="w-full max-w-lg mx-auto mt-12 bg-white rounded-xl">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="mb-2">
+        <div className="">
           <h1 className="text-2xl font-bold text-gray-800 text-center">Buch hinzufügen</h1>
           <p className="text-sm text-gray-500 mt-1 text-center">
             Trage die Details für das neue Buch ein.
@@ -59,13 +54,15 @@ export const Bookform = ({
         <Input
           label="Buchtitel"
           name="title"
-          value={formData?.title}
+          value={formData.title}
           onChange={handleChange}
+          onBlur={handleBlur}
           required={true}
+          error={touched.title ? errors.title : ""}
         />
         <Select
           label="Autoren"
-          name="authors"
+          name="authorId"
           value={formData?.authorId}
           onChange={handleChange}
           required={true}
@@ -80,6 +77,7 @@ export const Bookform = ({
           value={formData?.isbn}
           onChange={handleChange}
           required={false}
+          error={touched.authorId ? errors.authorId : ""}
         />
         <Input
           label="Erscheinungsjahr"
@@ -88,12 +86,8 @@ export const Bookform = ({
           onChange={handleChange}
           required={false}
         />
-        <div className="pt-6 flex justify-between w-full">
-          <Button variant="danger" type="button" disabled={false}>
-            Abbrechen
-          </Button>
-
-          <Button variant="primary" type="submit" disabled={false}>
+        <div className="flex justify-end w-full">
+          <Button variant="primary" type="submit" disabled={!!noError}>
             {submitLabel}
           </Button>
         </div>
