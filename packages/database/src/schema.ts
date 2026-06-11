@@ -16,5 +16,5 @@ export const books = pgTable("books", {
   authorId: integer("authorId").references(() => authors.id),
 });
 
-export type Book = typeof books.$inferInsert;
-export type NewBook = typeof books.$inferSelect;
+export type Book = typeof books.$inferSelect;
+export type NewBook = typeof books.$inferInsert;

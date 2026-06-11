@@ -1,30 +1,24 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import { Bookform } from "@/components/BookForm";
+import { Bookform } from "@/hooks/BookForm";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useBookPageData } from "@/hooks/useBooksPageData";
+import type { Author, Book } from "@/types/models";
+import { Table } from "@/components/ui/Table";
 
-export type Author = {
-  id: number;
-  name: string;
-};
+const TABLE_HEADERS = ["Titel", "Autor", "Erscheinungsjahr"];
 
-export type Book = {
-  id: number;
-  title: string;
-  authorId: number;
-  isbn?: number;
-  year?: number;
-};
 export default function BooksPage() {
-  //--- STATES ---
-  const { fetchedBooks, fetchedAuthors } = useBookPageData();
+  //--- HOOKS & DATA ---
+  const { fetchedBooks, fetchedAuthors, isLoading } = useBookPageData();
+
+  //--- STATE ---
   const [formVisibility, setFormVisibility] = useState<boolean>(false);
   const [authors, setAuthors] = useState<Author[]>([]);
   const [books, setBooks] = useState<Book[]>([]);
 
+  // --- EFFECTS ---
   useEffect(() => {
     if (fetchedAuthors && fetchedAuthors.length > 0) {
       setAuthors(fetchedAuthors);
@@ -38,67 +32,78 @@ export default function BooksPage() {
   }, [fetchedBooks]);
 
   // --- HANDLER ---
-  const handleSubmit = async (newBook: Book) => {
-    const prepBook: Book = {
-      ...newBook,
-      id: Date.now(),
-    };
+  const handleCreateBook = async (newBook: Book) => {
+    try {
+      const response = await fetch("/api/books", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newBook),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Fehler beim Erstellen des Buchs");
+      }
 
-    setBooks((prev) => [...prev, prepBook]);
-    setFormVisibility(!formVisibility);
+      const createdBook = await response.json();
+
+      setBooks((prev) => [...prev, createdBook]);
+
+      setFormVisibility(!formVisibility);
+    } catch (error) {
+      console.error("Fehler beim Hinzufügen des Buches:", error);
+    }
   };
 
-  const handleClick = (toDelete: Book) => {
-    setBooks((prev) => prev.filter((book) => book.id !== toDelete.id));
+  const handleDeleteBook = async ({ id }: Book) => {
+    try {
+      const response = await fetch(`/api/books/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Fehler beim Löschen des Buches");
+      }
+      setBooks((prev) => prev.filter((book) => book.id !== id));
+    } catch (error) {
+      console.error("Fehler beim Löschen des Buches", error);
+    }
   };
-
+  // --- HILFSFUNKTIONEN ---
   const getAuthorName = (id: number) => {
     const authorById = authors.find((a) => a.id === Number(id));
 
     return authorById ? authorById.name : "Unbekannt";
   };
 
+  // --- LOADING-STATE ---
+  if (isLoading && books.length === 0) {
+    return <div className="p-6 text-center">Daten werden geladen...</div>;
+  }
+
   return (
     <div>
       <div className="flex flex-row gap-6">
-        <Input label={"Suche..."} name={"Suche"} onChange={() => console.log("hallo")} />
-        <Button
-          variant="primary"
-          type="button"
-          disabled={false}
-          onClick={() => setFormVisibility(!formVisibility)}
-        >
+        <Input
+          label={"Suche..."}
+          name={"Suche"}
+          onChange={() => console.log("Suche gestartet...")}
+        />
+        <Button variant="primary" type="button" onClick={() => setFormVisibility(!formVisibility)}>
           {"Buch hinzufügen"}
         </Button>
       </div>
-      <div className="">
-        <table className="w-full text-left table-auto min-w-max">
-          <thead>
-            <tr>
-              <th className="p-4 border-b border-blue-gray-500 bg-blue-grey-50">Titel</th>
-              <th className="p-4 border-b border-blue-gray-500 bg-blue-grey-50">Autor</th>
-              <th className="p-4 border-b border-blue-gray-500 bg-blue-grey-50">
-                Erscheinungsjahr
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {books.map((book) => {
-              const authorName = getAuthorName(book.authorId);
-
-              return (
-                <tr key={book.id}>
-                  <td className="p-4 border-b ">{book.title}</td>
-                  <td className="p-4 border-b">{authorName}</td>
-                  <td className="p-4 border-b">{book.year}</td>
-                  <button type="button" onClick={() => handleClick(book)}>
-                    X
-                  </button>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="mt-6">
+        <Table
+          books={books}
+          headers={TABLE_HEADERS}
+          onDeleteClick={handleDeleteBook}
+          getAuthorName={getAuthorName}
+        />
       </div>
       <div
         className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 p-6 transition-transform duration-500 ease-in-out"
@@ -106,14 +111,14 @@ export default function BooksPage() {
           transform: formVisibility ? "translateX(0)" : "translateX(100%)",
         }}
       >
-        <Bookform authors={authors} onSubmit={handleSubmit} />
+        <Bookform authors={authors} onSubmit={handleCreateBook} />
       </div>
 
       <button
         type="button"
         className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-500"
         style={{
-          opacity: formVisibility ? 2 : 0,
+          opacity: formVisibility ? 1 : 0,
           pointerEvents: formVisibility ? "auto" : "none",
         }}
         onClick={() => setFormVisibility(false)}

@@ -1,20 +1,14 @@
 "use client";
-import { Input } from "./ui/Input";
-import { Select } from "./ui/Select";
-import { Button } from "./ui/Button";
+import { Input } from "../components/ui/Input";
+import { Select } from "../components/ui/Select";
+import { Button } from "../components/ui/Button";
 import { type Errors, useForm } from "@/hooks/useForm";
-
-interface BookFormData {
-  title?: string;
-  authorId?: string;
-  isbn?: string;
-  year?: string;
-}
+import type { Book } from "@/types/models";
 
 export type BookformProps = {
-  initialValues?: BookFormData;
+  initialValues?: Book;
   authors: { id: number | string; name: string }[];
-  onSubmit: (values: BookFormData) => Promise<void> | void;
+  onSubmit: (values: Book) => Promise<void> | void;
   submitLabel?: string;
 };
 
@@ -25,10 +19,10 @@ export const Bookform = ({
   submitLabel = "Speichern",
 }: BookformProps) => {
   const { formData, handleSubmit, handleChange, handleBlur, touched, errors, noError } =
-    useForm<BookFormData>({
+    useForm<Book>({
       initialValue: {
-        title: initialValues?.title,
-        authorId: initialValues?.authorId,
+        title: initialValues?.title || " ",
+        authorId: initialValues?.authorId || 0,
         isbn: initialValues?.isbn,
         year: initialValues?.year,
       },
