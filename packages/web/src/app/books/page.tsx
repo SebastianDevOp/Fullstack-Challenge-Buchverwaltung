@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { Bookform } from "@/components/BookForm";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { useBookPageData } from "@/hooks/useBooksPageData";
 
-type Author = {
+export type Author = {
   id: number;
   name: string;
 };
 
-type Book = {
+export type Book = {
   id: number;
   title: string;
   authorId: number;
@@ -18,38 +19,32 @@ type Book = {
   year?: number;
 };
 export default function BooksPage() {
+  //--- STATES ---
+  const { fetchedBooks, fetchedAuthors } = useBookPageData();
   const [formVisibility, setFormVisibility] = useState<boolean>(false);
   const [authors, setAuthors] = useState<Author[]>([]);
   const [books, setBooks] = useState<Book[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const resA = await fetch("/api/authors");
-        const resultA = await resA.json();
-        const resB = await fetch("/api/books");
-        const resultB = await resB.json();
-        const flatBooks = resultB.map((row: any) => row.books);
-        setAuthors(resultA);
-        setBooks(flatBooks);
-        console.log(resultB);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchData();
-  }, []);
+    if (fetchedAuthors && fetchedAuthors.length > 0) {
+      setAuthors(fetchedAuthors);
+    }
+  }, [fetchedAuthors]);
 
+  useEffect(() => {
+    if (fetchedBooks && fetchedBooks.length > 0) {
+      setBooks(fetchedBooks);
+    }
+  }, [fetchedBooks]);
+
+  // --- HANDLER ---
   const handleSubmit = async (newBook: Book) => {
     const prepBook: Book = {
+      ...newBook,
       id: Date.now(),
-      title: newBook.title,
-      authorId: newBook.authorId,
-      isbn: newBook.isbn,
-      year: newBook.year,
     };
 
-    await setBooks((prev) => [...prev, prepBook]);
+    setBooks((prev) => [...prev, prepBook]);
     setFormVisibility(!formVisibility);
   };
 
@@ -71,9 +66,10 @@ export default function BooksPage() {
           variant="primary"
           type="button"
           disabled={false}
-          children={"Buch hinzufügen"}
           onClick={() => setFormVisibility(!formVisibility)}
-        />
+        >
+          {"Buch hinzufügen"}
+        </Button>
       </div>
       <div className="">
         <table className="w-full text-left table-auto min-w-max">
@@ -113,10 +109,11 @@ export default function BooksPage() {
         <Bookform authors={authors} onSubmit={handleSubmit} />
       </div>
 
-      <div
+      <button
+        type="button"
         className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-500"
         style={{
-          opacity: formVisibility ? 1 : 0,
+          opacity: formVisibility ? 2 : 0,
           pointerEvents: formVisibility ? "auto" : "none",
         }}
         onClick={() => setFormVisibility(false)}

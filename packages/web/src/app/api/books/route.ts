@@ -1,7 +1,6 @@
 import { books, authors, db } from "@book-manager/database";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
-import type  Book  from "@/app/books/page"
 
 export async function GET() {
   try {
@@ -10,13 +9,11 @@ export async function GET() {
       .from(books)
       .innerJoin(authors, eq(books.authorId, authors.id));
     return NextResponse.json(allBooks);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  export async function PUT({title, authorId, isbn?, year} : Book) {
-    try{
-      await db.insert(books).values({title, authorId, isbn?, year})
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
   }
 }
+
+export async function PUT() {}
