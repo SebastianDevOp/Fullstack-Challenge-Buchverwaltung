@@ -1,28 +1,36 @@
-type InputProps = {
+import type { ComponentPropsWithoutRef } from "react";
+
+type InputProps = ComponentPropsWithoutRef<"input"> & {
   label: string;
   name: string;
-  value?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type?: "text";
-  required?: boolean;
   error?: string;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 };
 
-export const Input = ({ label, name, value, onChange, required, error, onBlur }: InputProps) => {
+export const Input = ({
+  label,
+  name,
+  value,
+  onChange,
+  required,
+  type = "text",
+  error,
+  onBlur,
+  ...props
+}: InputProps) => {
   return (
     <div className="w-full">
       <div className="relative">
         <input
           className="peer w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
           name={name}
-          id={label}
-          type="text"
+          id={name}
+          type={type}
           value={value ? value : ""}
           onChange={onChange}
           onBlur={onBlur}
           required={required}
           placeholder=" "
+          {...props}
         />
         <label
           className="absolute cursor-text bg-white px-1 left-2.5 top-2.5 text-slate-400 text-sm transition-all transform origin-left 

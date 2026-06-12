@@ -1,9 +1,9 @@
 "use client";
-import { Input } from "../components/ui/Input";
-import { Select } from "../components/ui/Select";
-import { Button } from "../components/ui/Button";
 import { type Errors, useForm } from "@/hooks/useForm";
 import type { Book } from "@/types/models";
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Select } from "../components/ui/Select";
 
 export type BookformProps = {
   initialValues?: Book;
@@ -21,6 +21,7 @@ export const Bookform = ({
   const { formData, handleSubmit, handleChange, handleBlur, touched, errors, noError } =
     useForm<Book>({
       initialValue: {
+        id: initialValues?.id || 0,
         title: initialValues?.title || " ",
         authorId: initialValues?.authorId || 0,
         isbn: initialValues?.isbn,

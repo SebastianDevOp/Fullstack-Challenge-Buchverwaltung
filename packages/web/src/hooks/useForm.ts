@@ -36,7 +36,7 @@ export function useForm<T>({ initialValue, onSubmit, validate }: UseFormOption<T
     if (noError === 0) {
       await onSubmit(formData);
       setFormData(initialValue);
-      alert("Buch Erfolgreich hinzugefügt");
+      alert("Buch erfolgreich hinzugefügt");
     } else {
       alert("Eingabe unvollständig");
     }

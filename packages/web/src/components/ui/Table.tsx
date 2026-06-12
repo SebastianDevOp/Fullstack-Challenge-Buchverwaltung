@@ -13,10 +13,10 @@ export const Table = ({ books, headers, onDeleteClick, getAuthorName }: BooksTab
       <div className="overflow-x-auto">
         <table className="w-full text-left table-auto min-w-max border-collapse">
           <thead>
-            <tr className="bg-blue-50/50 border-b border-blue-100">
-              {headers.map((header, index) => (
+            <tr className="bg-blue-50/50 border-b border-blue-100 ">
+              {headers.map((header) => (
                 <th
-                  key={index}
+                  key={header}
                   className="p-4 text-xs font-semibold uppercase tracking-wider text-blue-600/80"
                 >
                   {header}
@@ -27,7 +27,6 @@ export const Table = ({ books, headers, onDeleteClick, getAuthorName }: BooksTab
               </th>
             </tr>
           </thead>
-
           <tbody className="divide-y divide-gray-100">
             {books.map((book: Book) => {
               const authorName = getAuthorName(book.authorId);
@@ -49,6 +48,7 @@ export const Table = ({ books, headers, onDeleteClick, getAuthorName }: BooksTab
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"

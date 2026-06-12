@@ -1,13 +1,19 @@
-type SelectProps = {
+import type { ComponentPropsWithoutRef } from "react";
+
+type SelectProps = ComponentPropsWithoutRef<"select"> & {
   label: string;
-  name: string;
-  value?: string | number;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options: { value: string | number; label: string }[];
-  required?: boolean;
 };
 
-export const Select = ({ label, name, value, onChange, required, options }: SelectProps) => {
+export const Select = ({
+  label,
+  name,
+  value,
+  onChange,
+  required,
+  options,
+  ...props
+}: SelectProps) => {
   return (
     <div className="w-full ">
       <select
@@ -17,12 +23,13 @@ export const Select = ({ label, name, value, onChange, required, options }: Sele
         value={value ? value : ""}
         onChange={onChange}
         required={required}
+        {...props}
       >
         <option value="" disabled>
           {`Wähle ${label}`}
         </option>
 
-        {options?.map((option) => (
+        {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>

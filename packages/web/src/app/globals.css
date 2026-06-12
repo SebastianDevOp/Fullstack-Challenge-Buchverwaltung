@@ -81,7 +81,6 @@ table {
   margin-top: 16px;
 }
 
-
 tr:hover {
   background: #f8f8f8;
 }
@@ -102,7 +101,6 @@ select:focus {
   border-color: #0066cc;
 }
 
-
 label {
   font-weight: 500;
   font-size: 0.9rem;
@@ -116,7 +114,6 @@ button {
   font-size: 1rem;
   font-family: inherit;
 }
-
 
 button.primary {
   background: #0066cc;
