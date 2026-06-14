@@ -4,42 +4,77 @@ type BooksTableProps = {
   books: Book[];
   headers: string[];
   onDeleteClick: (book: Book) => void;
+  onUpdateClick: (book: Book) => void;
   getAuthorName: (authorID: number) => string;
 };
 
-export const Table = ({ books, headers, onDeleteClick, getAuthorName }: BooksTableProps) => {
+export const Table = ({
+  books,
+  headers,
+  onDeleteClick,
+  onUpdateClick,
+  getAuthorName,
+}: BooksTableProps) => {
   return (
-    <div className="w-full overflow-hidden rounded-xl border border-blue-100 bg-white shadow-sm mt-6 ">
+    <div className=" w-full overflow-hidden rounded-l border border-gray-100 bg-white shadow-sm">
       <div className="overflow-x-auto">
-        <table className="w-full text-left table-auto min-w-max border-collapse">
-          <thead>
-            <tr className="bg-blue-50/50 border-b border-blue-100 ">
+        <table className="w-full min-w-full table-fixed border-collapse text-left">
+          <thead className="">
+            <tr>
               {headers.map((header) => (
                 <th
                   key={header}
-                  className="p-4 text-xs font-semibold uppercase tracking-wider text-blue-600/80"
+                  className="text-s font-semibold uppercase tracking-wider text-gray-500"
                 >
                   {header}
                 </th>
               ))}
-              <th className="p-4 text-xs font-semibold uppercase tracking-wider text-blue-600/80 text-right">
+              <th className="text-right text-s font-semibold uppercase tracking-wider text-gray-500">
                 Aktionen
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {books.map((book: Book) => {
-              const authorName = getAuthorName(book.authorId);
+              const currentAuthorId = book?.authorId ?? 0;
+              const authorName = getAuthorName(currentAuthorId);
 
               return (
-                <tr key={book.id} className="transition-colors duration-150 hover:bg-gray-50/50">
-                  <td className="p-4 text-sm font-medium text-gray-900">{book.title}</td>
+                <tr
+                  key={book?.id ?? Math.random()}
+                  className="transition-colors hover:bg-gray-50/40"
+                >
+                  <td className="p-4 text-sm font-medium text-gray-900">
+                    {book?.title ?? "Unbekannter Titel"}
+                  </td>
                   <td className="p-4 text-sm text-gray-600">{authorName}</td>
-                  <td className="p-4 text-sm text-gray-500">{book.year || "—"}</td>
-                  <td className="p-4 text-sm text-right">
+                  <td className="p-4 text-sm text-gray-500">{book?.year ?? "Unbekanntes Jahr"}</td>
+                  <td className="p-4 text-right text-sm space-x-1">
                     <button
                       type="button"
-                      className="inline-flex items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                      className="inline-flex items-center justify-center rounded-lg p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all duration-150"
+                      onClick={() => onUpdateClick(book)}
+                      title="Buch bearbeiten"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center rounded-lg p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all duration-150"
                       onClick={() => onDeleteClick(book)}
                       title="Buch löschen"
                     >

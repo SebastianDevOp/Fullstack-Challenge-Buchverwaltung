@@ -39,30 +39,34 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
 }
 
 const schema = z.object({
-  title: z.string().optional,
-  authorId: z.number().positive().optional(),
+  title: z.string().optional(),
+  authorId: z.coerce.number().optional(),
   isbn: z.string().optional(),
-  year: z.number().optional,
+  year: z.number().optional(),
 });
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const resolvedParams = await params;
     const bookId = Number(resolvedParams.id);
-    const result = schema.safeParse(request);
+    const body = await request.json();
+    const result = schema.safeParse(body);
     if (!result.success) {
       return NextResponse.json({ error: result.error.flatten() }, { status: 400 });
     }
-    const body = await request.json();
+
+    const { title, authorId, isbn, year } = result.data;
+
     const updatedBook = await db
       .update(books)
       .set({
-        title: body.title,
-        authorId: body.authorId,
-        isbn: body.isbn,
-        year: body.year,
+        title: title,
+        authorId: authorId,
+        isbn: isbn,
+        year: year,
       })
-      .where(eq(books.id, bookId));
+      .where(eq(books.id, bookId))
+      .returning();
     if (!updatedBook) {
       return NextResponse.json({ error: "Buch nicht verhanden" }, { status: 404 });
     }

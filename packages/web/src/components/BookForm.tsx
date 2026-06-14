@@ -22,7 +22,7 @@ export const Bookform = ({
     useForm<Book>({
       initialValue: {
         id: initialValues?.id || 0,
-        title: initialValues?.title || " ",
+        title: initialValues?.title || "",
         authorId: initialValues?.authorId || 0,
         isbn: initialValues?.isbn,
         year: initialValues?.year,

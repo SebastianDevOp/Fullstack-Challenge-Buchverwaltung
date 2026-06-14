@@ -42,6 +42,11 @@ const bookData = [
 ];
 
 async function main() {
+  console.log("Cleaning database...");
+
+  await db.delete(books);
+  await db.delete(authors);
+
   console.log("Seeding authors...");
 
   for (const author of authorData) {

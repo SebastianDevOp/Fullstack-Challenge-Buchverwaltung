@@ -17,7 +17,7 @@ export default function BooksPage() {
   const [formVisibility, setFormVisibility] = useState<boolean>(false);
   const [authors, setAuthors] = useState<Author[]>([]);
   const [books, setBooks] = useState<Book[]>([]);
-
+  const [editingBook, setEditingBook] = useState<Book | null>(null);
   // --- EFFECTS ---
   useEffect(() => {
     if (fetchedAuthors && fetchedAuthors.length > 0) {
@@ -32,6 +32,29 @@ export default function BooksPage() {
   }, [fetchedBooks]);
 
   // --- HANDLER ---
+  const handleOpenCreateForm = () => {
+    setEditingBook(null);
+    setFormVisibility(true);
+  };
+
+  const handleOpenEditing = (book: Book) => {
+    setEditingBook(book);
+    setFormVisibility(true);
+  };
+
+  const handleCloseFrom = () => {
+    setEditingBook(null);
+    setFormVisibility(false);
+  };
+
+  const handleFormSubmit = async (formData: Book) => {
+    if (editingBook) {
+      await handleUpdateBook(formData);
+    } else {
+      await handleCreateBook(formData);
+    }
+  };
+
   const handleCreateBook = async (newBook: Book) => {
     try {
       const response = await fetch("/api/books", {
@@ -45,14 +68,15 @@ export default function BooksPage() {
         const errorData = await response.json();
         throw new Error(errorData.error || "Fehler beim Erstellen des Buchs");
       }
-
       const createdBook = await response.json();
 
       setBooks((prev) => [...prev, createdBook]);
 
-      setFormVisibility(!formVisibility);
+      handleCloseFrom();
     } catch (error) {
-      console.error("Fehler beim Hinzufügen des Buches:", error);
+      if (error instanceof Error) {
+        console.log(error.message);
+      }
     }
   };
 
@@ -71,6 +95,35 @@ export default function BooksPage() {
       setBooks((prev) => prev.filter((book) => book.id !== id));
     } catch (error) {
       console.error("Fehler beim Löschen des Buches", error);
+    }
+  };
+
+  const handleUpdateBook = async (updatedBook: Book) => {
+    try {
+      const response = await fetch(`/api/books/${updatedBook.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(updatedBook),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Fehler beim Bearbeiten des Buches");
+      }
+
+      setBooks((prev) =>
+        prev.map((book) => {
+          if (Number(book.id) === Number(updatedBook.id)) {
+            return updatedBook;
+          } else {
+            return book;
+          }
+        }),
+      );
+      handleCloseFrom();
+    } catch (error) {
+      console.log("Fehler beim Bearbeiten des Buches", error);
     }
   };
   // --- HILFSFUNKTIONEN ---
@@ -93,7 +146,7 @@ export default function BooksPage() {
           name={"Suche"}
           onChange={() => console.log("Suche gestartet...")}
         />
-        <Button variant="primary" type="button" onClick={() => setFormVisibility(!formVisibility)}>
+        <Button variant="primary" type="button" onClick={handleOpenCreateForm}>
           {"Buch hinzufügen"}
         </Button>
       </div>
@@ -103,6 +156,7 @@ export default function BooksPage() {
           headers={TABLE_HEADERS}
           onDeleteClick={handleDeleteBook}
           getAuthorName={getAuthorName}
+          onUpdateClick={handleOpenEditing}
         />
       </div>
       <div
@@ -111,7 +165,13 @@ export default function BooksPage() {
           transform: formVisibility ? "translateX(0)" : "translateX(100%)",
         }}
       >
-        <Bookform authors={authors} onSubmit={handleCreateBook} />
+        <Bookform
+          key={editingBook?.id || "new"}
+          authors={authors}
+          onSubmit={handleFormSubmit}
+          initialValues={editingBook ? editingBook : undefined}
+          submitLabel={editingBook ? "Aktualisieren" : "Speichern"}
+        />
       </div>
 
       <button
@@ -121,7 +181,7 @@ export default function BooksPage() {
           opacity: formVisibility ? 1 : 0,
           pointerEvents: formVisibility ? "auto" : "none",
         }}
-        onClick={() => setFormVisibility(false)}
+        onClick={handleCloseFrom}
       />
     </div>
   );

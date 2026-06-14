@@ -2,8 +2,9 @@
 
 * {
   box-sizing: border-box;
-  margin: 0;
+  margin: 2;
   padding: 2px;
+  
 }
 
 body {
@@ -78,7 +79,7 @@ li {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 16px;
+  
 }
 
 tr:hover {

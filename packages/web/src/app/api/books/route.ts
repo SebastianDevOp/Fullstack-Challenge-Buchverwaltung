@@ -1,7 +1,6 @@
 import { authors, books, db } from "@book-manager/database";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { error } from "node:console";
 import { z } from "zod";
 
 export async function GET() {
@@ -19,10 +18,10 @@ export async function GET() {
 }
 
 const schema = z.object({
-  titel: z.string().min(1),
-  authorId: z.number().positive(),
-  isbn: z.string().optional(),
-  year: z.number().optional(),
+  title: z.string().min(1),
+  authorId: z.coerce.number().positive(),
+  isbn: z.coerce.string().optional(),
+  year: z.coerce.number().optional(),
 });
 
 export async function POST(request: Request) {
@@ -30,10 +29,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const result = schema.safeParse(body);
     if (!result.success) {
-      return NextResponse.json({ error: result.error.flatten }, { status: 400 });
+      return NextResponse.json({ error: result.error }, { status: 400 });
     }
 
-    const { title, authorId, isbn, year } = body;
+    const { title, authorId, isbn, year } = result.data;
 
     const [insertBook] = await db
       .insert(books)

@@ -13,7 +13,7 @@ export function useBookPageData() {
       try {
         const [authorsResponse, booksResponse] = await Promise.all([
           fetch("/api/authors"),
-          fetch("api/books"),
+          fetch("/api/books"),
         ]);
 
         const authorsData = await authorsResponse.json();
