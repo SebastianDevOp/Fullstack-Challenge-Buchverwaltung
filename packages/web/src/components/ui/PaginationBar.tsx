@@ -14,12 +14,6 @@ export const PaginationBar = ({
   totalCount,
   totalPages,
 }: PaginationBarProps) => {
-  console.log("--- DEBUGGING PAGINATION ---");
-  console.log("Wert currentPage:", currentPage);
-  console.log("Typ currentPage:", typeof currentPage);
-  console.log("Wert totalPages:", totalPages);
-  console.log("Typ totalPages:", typeof totalPages);
-  console.log("----------------------------");
   return (
     <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6 mt-4">
       <div className="flex flex-1 justify-between sm:hidden">

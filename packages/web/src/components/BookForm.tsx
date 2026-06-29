@@ -7,6 +7,7 @@ import type { Author, Book } from "@/types/models";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Select } from "../components/ui/Select";
+import { BookTitleAutocomplete } from "./ui/BookTitleAutocomplete";
 
 export type BookformProps = {
   initialValues?: Book;
@@ -39,7 +40,6 @@ export const Bookform = ({
       },
     });
   const [localAuthors, setLocalAuthors] = useState(initialAuthors);
-  const [showDropdown, setShowDropdown] = useState(false);
   const { results, isSearching } = useOpenLibrarySearch(formData.title);
 
   const updateFormValue = (name: string, value: string | number) => {
@@ -52,9 +52,9 @@ export const Bookform = ({
     if (book.year) updateFormValue("year", book.year);
     if (book.authorName) {
       const matchedAuthor = localAuthors.find(
-        (a: any) =>
-          a.name.toLowerCase().includes(book.authorName!.toLowerCase()) ||
-          book.authorName!.toLowerCase().includes(a.name.toLowerCase()),
+        (a: Author) =>
+          a.name.toLowerCase().includes(book.authorName?.toLowerCase()) ||
+          book.authorName?.toLowerCase().includes(a.name.toLowerCase()),
       );
 
       if (matchedAuthor) {
@@ -63,15 +63,13 @@ export const Bookform = ({
         try {
           const newAuthor = await createAuthorActio(book.authorName);
 
-          setLocalAuthors((prev: any) => [...prev, newAuthor]);
+          setLocalAuthors((prev: Author[]) => [...prev, newAuthor]);
           updateFormValue("authorId", newAuthor.id);
         } catch (error) {
           console.log("Fehler beim automatischen Anlegen des Authors.", error);
         }
       }
     }
-
-    setShowDropdown(false);
   };
 
   return (
@@ -84,51 +82,16 @@ export const Bookform = ({
           </p>
         </div>
 
-        <div className="relative flex flex-col">
-          <div
-            onFocus={() => setShowDropdown(true)}
-            onBlur={(e) => {
-              handleBlur(e);
-              setTimeout(() => setShowDropdown(false), 200);
-            }}
-          >
-            <Input
-              label="Buchtitel"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required={true}
-              error={touched.title ? errors.title : ""}
-            />
-          </div>
-
-          {showDropdown && (isSearching || results.length > 0) && (
-            <div className="absolute top-[100%] left-0 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
-              {isSearching ? (
-                <div className="p-3 text-sm text-gray-500 text-center">Suche in OpenLibrary...</div>
-              ) : (
-                <ul className="py-1">
-                  {results.map((book, idx) => (
-                    <li
-                      key={idx}
-                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex flex-col transition-colors"
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        handleSelectBook(book);
-                      }}
-                    >
-                      <span className="font-medium text-gray-900">{book.title}</span>
-                      <span className="text-xs text-gray-500">
-                        {book.authorName ? `von ${book.authorName}` : "Unbekannter Autor"}
-                        {book.year ? ` • ${book.year}` : ""}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-        </div>
+        <BookTitleAutocomplete
+          results={results}
+          isSearching={isSearching}
+          handleSelectBook={handleSelectBook}
+          formData={formData}
+          touched={touched}
+          errors={errors}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+        />
 
         <Select
           label="Autoren"

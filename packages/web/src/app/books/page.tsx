@@ -1,5 +1,5 @@
 import { authors, books, db } from "@book-manager/database";
-import { and, count, eq, ilike, type SQL } from "drizzle-orm";
+import { and, count, ilike, type SQL } from "drizzle-orm";
 import { BooksClientView } from "./BooksClientView";
 
 export default async function BooksPage({
