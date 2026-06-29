@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef } from "react";
 
+// -- Props --
 type InputProps = ComponentPropsWithoutRef<"input"> & {
   label: string;
   name: string;
@@ -12,10 +13,10 @@ export const Input = ({
   value,
   onChange,
   required,
-  type = "text",
+  type = "text", // Default - Wert
   error,
   onBlur,
-  ...props
+  ...restProps
 }: InputProps) => {
   return (
     <div className="w-full">
@@ -30,7 +31,7 @@ export const Input = ({
           onBlur={onBlur}
           required={required}
           placeholder=" "
-          {...props}
+          {...restProps}
         />
         <label
           className="absolute cursor-text bg-white px-1 left-2.5 top-2.5 text-slate-400 text-sm transition-all transform origin-left 

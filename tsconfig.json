@@ -12,7 +12,8 @@
     "isolatedModules": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "types" : ["node", "react", "vitest/globals"]
   },
   "exclude": ["node_modules"]
 }

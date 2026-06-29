@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,6 +23,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </nav>
           <main>{children}</main>
         </div>
+
+        <Toaster richColors position="top-center" />
       </body>
     </html>
   );

@@ -12,7 +12,6 @@ type UseFormOption<T> = {
 export function useForm<T>({ initialValue, onSubmit, validate }: UseFormOption<T>) {
   const [formData, setFormData] = useState<T>(initialValue);
   const [touched, setTouched] = useState<Touched<T>>({});
-
   const errors: Errors<T> = validate ? validate(formData) : {};
   const noError = Object.keys(errors).length;
 
@@ -36,7 +35,6 @@ export function useForm<T>({ initialValue, onSubmit, validate }: UseFormOption<T
     if (noError === 0) {
       await onSubmit(formData);
       setFormData(initialValue);
-      alert("Buch erfolgreich hinzugefügt");
     } else {
       alert("Eingabe unvollständig");
     }
