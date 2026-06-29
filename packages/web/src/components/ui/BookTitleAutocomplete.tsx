@@ -54,7 +54,7 @@ export const BookTitleAutocomplete = ({
             <ul className="py-1">
               {results.map((book) => (
                 <li
-                  key={book.title}
+                  key={book.key}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex flex-col transition-colors"
                   onMouseDown={(e) => {
                     e.preventDefault();

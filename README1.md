@@ -4,16 +4,16 @@
 
 ### Next.js
 * Framework für Fullstack-React-Anwendungen.
-* Server vs. Client Components: [Erkenntnisse hier eintragen]
-* Route Handlers (API): [Erkenntnisse hier eintragen]
+* Server vs. Client Components: 
+* Route Handlers (API): 
 
 ### Drizzle ORM
 * Type-safe SQL Query Builder für TypeScript.
-* Relationen & Constraints: [Erkenntnisse hier eintragen]
+* Relationen & Constraints: 
 
 ### Clean Code
-* DRY-Prinzip (Don't Repeat Yourself): [Erkenntnisse hier eintragen]
-* Ausbaufähige Komponenten-Schnittstellen: [Erkenntnisse hier eintragen]
+* DRY-Prinzip (Don't Repeat Yourself): 
+* Ausbaufähige Komponenten-Schnittstellen: 
 
 ---
 
@@ -62,14 +62,14 @@ export const Button = ({ variant, type, onClick, disabled, children }: ButtonPro
 * Status: Offen
 * Code Input:
 ```tsx
-// Dein Code hier
+
 
 ```
 
 
 * Code Select:
 ```tsx
-// Dein Code hier
+
 
 ```
 
@@ -127,6 +127,5 @@ export const Button = ({ variant, type, onClick, disabled, children }: ButtonPro
 
 ---
 
-Welche Aufgabe gehst du als Nächstes an?
 
 ```

@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react";
 
 export type OpenLibraryBook = {
+  key: string;
   title: string;
-  authorName: string;
-  isbn: number;
-  year: number;
+  authorName?: string;
+  isbn?: number;
+  year?: number;
+  coverUrl?: string;
+};
+
+type OpenLibraryBookDoc = {
+  key: string;
+  title: string;
+  author_name?: string;
+  first_publish_year?: number;
+  isbn?: string;
+  cover_i?: number;
 };
 
 export function useOpenLibrarySearch(query: string) {
@@ -26,11 +37,15 @@ export function useOpenLibrarySearch(query: string) {
         );
         const data = await response.json();
 
-        const formattedResults = data.docs.map((doc: any) => ({
+        const formattedResults = data.docs.map((doc: OpenLibraryBookDoc) => ({
+          key: doc.key,
           title: doc.title,
           authorName: doc.author_name?.[0],
           year: doc.first_publish_year,
           isbn: doc.isbn?.[0],
+          coverUrl: doc.cover_i
+            ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
+            : undefined,
         }));
         setResult(formattedResults);
       } catch (error) {
