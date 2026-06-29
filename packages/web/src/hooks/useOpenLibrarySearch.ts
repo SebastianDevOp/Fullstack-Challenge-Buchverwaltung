@@ -17,11 +17,20 @@ type OpenLibraryBookDoc = {
   isbn?: string;
   cover_i?: number;
 };
-
+/**
+ * Hook für die Live-Suche in der OpenLibrary API.
+ * Holt Buchtitel, Autoren, Erscheinungsjahre, ISBNs und generiert Cover-URLs(Wird in Zukunft ergänzt).
+ * Nutzt einen Debounce, um nicht bei jedem Tastendruck die API zu überlasten.
+ *
+ * @param query - Der aktuelle Suchbegriff aus dem Eingabefeld.
+ * @returns Ein Objekt mit dem Ladezustand und den formatierten Suchergebnissen.
+ */
 export function useOpenLibrarySearch(query: string) {
+  // --- STATE ----
   const [results, setResult] = useState<OpenLibraryBook[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
+  // --- API-AUFRUF ---
   useEffect(() => {
     if (query.trim().length < 3) {
       setResult([]);
@@ -58,5 +67,5 @@ export function useOpenLibrarySearch(query: string) {
 
     return () => clearTimeout(timer);
   }, [query]);
-  return { results, isSearching };
+  return { isSearching, results };
 }

@@ -1,8 +1,7 @@
 "use client";
-import { useState } from "react";
-import { createAuthorActio } from "@/app/books/action";
+import { useBookSelection } from "@/hooks/useBookSelection";
 import { type Errors, useForm } from "@/hooks/useForm";
-import { type OpenLibraryBook, useOpenLibrarySearch } from "@/hooks/useOpenLibrarySearch";
+import { useOpenLibrarySearch } from "@/hooks/useOpenLibrarySearch";
 import type { Author, Book } from "@/types/models";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
@@ -22,7 +21,7 @@ export const Bookform = ({
   onSubmit,
   submitLabel = "Speichern",
 }: BookformProps) => {
-  const { formData, handleSubmit, handleChange, handleBlur, touched, errors, noError } =
+  const { formData, handleSubmit, handleChange, handleBlur, touched, errors, hasErrors } =
     useForm<Book>({
       initialValue: {
         id: initialValues?.id || 0,
@@ -39,38 +38,11 @@ export const Bookform = ({
         return errors;
       },
     });
-  const [localAuthors, setLocalAuthors] = useState(initialAuthors);
-  const { results, isSearching } = useOpenLibrarySearch(formData.title);
-
   const updateFormValue = (name: string, value: string | number) => {
     handleChange({ target: { name, value } } as React.ChangeEvent<HTMLInputElement>);
   };
-
-  const handleSelectBook = async (book: OpenLibraryBook) => {
-    updateFormValue("title", book.title);
-    if (book.isbn) updateFormValue("isbn", book.isbn);
-    if (book.year) updateFormValue("year", book.year);
-    if (book.authorName) {
-      const matchedAuthor = localAuthors.find(
-        (a: Author) =>
-          a.name.toLowerCase().includes(book.authorName?.toLowerCase()) ||
-          book.authorName?.toLowerCase().includes(a.name.toLowerCase()),
-      );
-
-      if (matchedAuthor) {
-        updateFormValue("authorId", matchedAuthor.id);
-      } else {
-        try {
-          const newAuthor = await createAuthorActio(book.authorName);
-
-          setLocalAuthors((prev: Author[]) => [...prev, newAuthor]);
-          updateFormValue("authorId", newAuthor.id);
-        } catch (error) {
-          console.log("Fehler beim automatischen Anlegen des Authors.", error);
-        }
-      }
-    }
-  };
+  const { handleSelectBook, localAuthors } = useBookSelection(initialAuthors, updateFormValue);
+  const { results, isSearching } = useOpenLibrarySearch(formData.title);
 
   return (
     <div className="w-full max-w-lg mx-auto mt-12 bg-white rounded-xl">
@@ -120,7 +92,7 @@ export const Bookform = ({
         />
 
         <div className="flex justify-end w-full">
-          <Button variant="primary" type="submit" disabled={!!noError}>
+          <Button variant="primary" type="submit" disabled={!!hasErrors}>
             {submitLabel}
           </Button>
         </div>
