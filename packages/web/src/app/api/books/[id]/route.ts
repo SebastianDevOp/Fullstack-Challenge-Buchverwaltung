@@ -12,7 +12,7 @@ const apiSchema = z.object({
 });
 
 // --- HILFSFUNKTION ---
-const getErrorMessage = (error: unknown) => {
+const errorResponse = (error: unknown) => {
   const message = error instanceof Error ? error.message : "Unbekannter Fehler";
   return NextResponse.json({ error: message }, { status: 500 });
 };
@@ -29,7 +29,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
     return NextResponse.json(book, { status: 200 });
   } catch (error) {
-    return getErrorMessage(error);
+    return errorResponse(error);
   }
 }
 
@@ -44,7 +44,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
 
     return NextResponse.json({ status: 204 });
   } catch (error) {
-    return getErrorMessage(error);
+    return errorResponse(error);
   }
 }
 
@@ -65,11 +65,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       .where(eq(books.id, bookId))
       .returning();
     if (updatedBook.length === 0) {
-      return NextResponse.json({ error: "Buch nicht verhanden" }, { status: 404 });
+      return NextResponse.json({ error: "Buch nicht vorhanden" }, { status: 404 });
     }
 
     return NextResponse.json(updatedBook, { status: 200 });
   } catch (error) {
-    return getErrorMessage(error);
+    return errorResponse(error);
   }
 }

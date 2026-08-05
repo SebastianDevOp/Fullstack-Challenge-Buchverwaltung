@@ -23,6 +23,7 @@
     "includes": [
       "packages/web/src/**",
       "packages/database/src/**",
+      "packages/mcp/src/**",
       "packages/database/seed.ts",
       "packages/database/drizzle.config.ts"
     ]

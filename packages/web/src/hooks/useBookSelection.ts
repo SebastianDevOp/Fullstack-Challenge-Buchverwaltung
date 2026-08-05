@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createAuthorActio } from "@/app/books/action";
+import { createAuthorAction } from "@/app/books/action";
 import type { Author } from "@/types/models";
 import type { OpenLibraryBook } from "./useOpenLibrarySearch";
 
@@ -12,11 +12,11 @@ import type { OpenLibraryBook } from "./useOpenLibrarySearch";
  * @returns Objekt mit Autoren-State und dem Auswahl-Handler.
  */
 export function useBookSelection(
-  initalAuthors: Author[],
+  initialAuthors: Author[],
   updateFormValue: (name: string, value: string | number) => void,
 ) {
   // --- LOKALER STATE ---
-  const [localAuthors, setLocalAuthors] = useState(initalAuthors);
+  const [localAuthors, setLocalAuthors] = useState(initialAuthors);
 
   // --- HANDLER FÜR BUCHAUSWAHL ---
   const handleSelectBook = async (book: OpenLibraryBook) => {
@@ -34,7 +34,7 @@ export function useBookSelection(
         updateFormValue("authorId", matchedAuthor.id);
       } else {
         try {
-          const newAuthor = await createAuthorActio(book.authorName);
+          const newAuthor = await createAuthorAction(book.authorName);
           setLocalAuthors((prev: Author[]) => [...prev, newAuthor]);
           updateFormValue("authorId", newAuthor.id);
         } catch (error) {

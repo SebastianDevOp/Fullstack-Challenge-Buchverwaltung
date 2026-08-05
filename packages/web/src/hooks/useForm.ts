@@ -26,7 +26,7 @@ export function useForm<T>({ initialValue, onSubmit, validate }: UseFormOption<T
 
   // --- ABGELEITETER STATE ---
   const errors: Errors<T> = validate ? validate(formData) : {};
-  const hasErrors = Object.keys(errors).length;
+  const hasErrors = Object.keys(errors).length > 0;
 
   // --- HANDLER UI-EVENTS ---
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {

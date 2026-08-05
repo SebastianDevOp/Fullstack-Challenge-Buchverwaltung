@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookform } from "@/components/BookForm";
+import { BookForm } from "@/components/BookForm";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PaginationBar } from "@/components/ui/PaginationBar";
@@ -85,7 +85,7 @@ export function BooksClientView({
         className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 p-6 transition-transform duration-500 ease-in-out"
         style={{ transform: formVisibility ? "translateX(0)" : "translateX(100%)" }}
       >
-        <Bookform
+        <BookForm
           key={editingBook?.id || "new"}
           authors={authors}
           onSubmit={handleFormSubmit}

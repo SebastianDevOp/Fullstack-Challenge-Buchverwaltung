@@ -58,7 +58,7 @@ export function useOpenLibrarySearch(query: string) {
         }));
         setResult(formattedResults);
       } catch (error) {
-        console.error("Fehler der der OpenLibrary Suche", error);
+        console.error("Fehler bei der OpenLibrary-Suche", error);
         setResult([]);
       } finally {
         setIsSearching(false);

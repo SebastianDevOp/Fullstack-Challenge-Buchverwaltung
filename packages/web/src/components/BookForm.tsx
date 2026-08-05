@@ -8,19 +8,19 @@ import { Input } from "../components/ui/Input";
 import { Select } from "../components/ui/Select";
 import { BookTitleAutocomplete } from "./ui/BookTitleAutocomplete";
 
-export type BookformProps = {
+export type BookFormProps = {
   initialValues?: Book;
   authors: Author[];
   onSubmit: (values: Book) => Promise<void> | void;
   submitLabel?: string;
 };
 
-export const Bookform = ({
+export const BookForm = ({
   initialValues,
   authors: initialAuthors,
   onSubmit,
   submitLabel = "Speichern",
-}: BookformProps) => {
+}: BookFormProps) => {
   const { formData, handleSubmit, handleChange, handleBlur, touched, errors, hasErrors } =
     useForm<Book>({
       initialValue: {
@@ -48,9 +48,13 @@ export const Bookform = ({
     <div className="w-full max-w-lg mx-auto mt-12 bg-white rounded-xl">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 text-center">Buch hinzufügen</h1>
+          <h1 className="text-2xl font-bold text-gray-800 text-center">
+            {initialValues ? "Buch bearbeiten" : "Buch hinzufügen"}
+          </h1>
           <p className="text-sm text-gray-500 mt-1 text-center">
-            Trage die Details für das neue Buch ein.
+            {initialValues
+              ? "Passe die Details des Buches an."
+              : "Trage die Details für das neue Buch ein."}
           </p>
         </div>
 
@@ -92,7 +96,7 @@ export const Bookform = ({
         />
 
         <div className="flex justify-end w-full">
-          <Button variant="primary" type="submit" disabled={!!hasErrors}>
+          <Button variant="primary" type="submit" disabled={hasErrors}>
             {submitLabel}
           </Button>
         </div>

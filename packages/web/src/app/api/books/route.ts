@@ -19,7 +19,7 @@ const urlSchema = z.object({
 });
 
 // --- HILFSFUNKTIONEN ---
-const getErrorMessage = (error: unknown) => {
+const errorResponse = (error: unknown) => {
   const message = error instanceof Error ? error.message : "Unbekannter Fehler";
   return NextResponse.json({ error: message }, { status: 500 });
 };
@@ -71,7 +71,7 @@ export async function GET(request: Request) {
       total: totalCount?.count ?? 0,
     });
   } catch (error) {
-    return getErrorMessage(error);
+    return errorResponse(error);
   }
 }
 export async function POST(request: Request) {
@@ -85,6 +85,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(insertBook, { status: 201 });
   } catch (error) {
-    return getErrorMessage(error);
+    return errorResponse(error);
   }
 }
