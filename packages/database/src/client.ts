@@ -1,3 +1,3 @@
-import "server-only";
+//import "server-only";
 
 export { db, pool } from "./db";
