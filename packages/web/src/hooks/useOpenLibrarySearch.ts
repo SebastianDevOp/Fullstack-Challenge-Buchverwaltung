@@ -42,7 +42,7 @@ export function useOpenLibrarySearch(query: string) {
         const response = await fetch(
           `https://openlibrary.org/search.json?title=${encodeURIComponent(
             query,
-          )}&limit=5&fields=title,author_name,first_publish_year,isbn`,
+          )}&limit=5&fields=key,title,author_name,first_publish_year,isbn`,
         );
         const data = await response.json();
 
