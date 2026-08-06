@@ -1,4 +1,4 @@
-import { authors, books, db } from "@book-manager/database";
+import { authors, books, db } from "@book-manager/database/node";
 import { FastMCP } from "@prefecthq/fastmcp-ts/server";
 import { ilike } from "drizzle-orm";
 import { z } from "zod";

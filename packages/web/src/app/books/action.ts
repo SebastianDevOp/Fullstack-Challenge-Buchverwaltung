@@ -8,8 +8,12 @@ import { z } from "zod";
 const book = z.object({
   title: z.string().trim().min(1),
   authorId: z.coerce.number().int().positive(),
-  isbn: z.string().trim().optional(),
-  year: z.coerce.number().int().positive(),
+  isbn: z
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => v || null),
+  year: z.preprocess((v) => v || undefined, z.coerce.number().int().positive().optional()),
 });
 
 export async function createAuthorAction(name: string) {
