@@ -3,7 +3,14 @@
 import { authors, books, db } from "@book-manager/database";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import type { Book } from "@/types/models";
+import { z } from "zod";
+
+const book = z.object({
+  title: z.string().trim().min(1),
+  authorId: z.coerce.number().int().positive(),
+  isbn: z.string().trim().optional(),
+  year: z.coerce.number().int().positive(),
+});
 
 export async function createAuthorAction(name: string) {
   const [newAuthor] = await db.insert(authors).values({ name }).returning();
@@ -12,20 +19,16 @@ export async function createAuthorAction(name: string) {
   return newAuthor;
 }
 
-export async function createBookAction(newBook: Book) {
-  const { id, ...bookDataToInsert } = newBook;
-  // Leere ISBN muss NULL sein: der UNIQUE-Constraint erlaubt beliebig viele
-  // NULL-Werte, aber nur einen einzigen leeren String.
-  await db.insert(books).values({ ...bookDataToInsert, isbn: bookDataToInsert.isbn || null });
+export async function createBookAction(input: unknown) {
+  await db.insert(books).values(book.parse(input));
 
   revalidatePath("/books");
 }
 
-export async function updateBookAction(updatedBook: Book) {
-  await db
-    .update(books)
-    .set({ ...updatedBook, isbn: updatedBook.isbn || null })
-    .where(eq(books.id, updatedBook.id));
+export async function updateBookAction(input: unknown) {
+  const { id, ...data } = book.extend({ id: z.coerce.number().int().positive() }).parse(input);
+
+  await db.update(books).set(data).where(eq(books.id, id));
 
   revalidatePath("/books");
 }
