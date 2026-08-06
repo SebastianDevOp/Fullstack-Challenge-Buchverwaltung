@@ -1,6 +1,6 @@
 import { authors, books, db } from "@book-manager/database/node";
 import { FastMCP } from "@prefecthq/fastmcp-ts/server";
-import { ilike } from "drizzle-orm";
+import { eq, ilike, sql } from "drizzle-orm";
 import { z } from "zod";
 
 const server = new FastMCP({
@@ -8,8 +8,21 @@ const server = new FastMCP({
   version: "1.0.0",
 });
 
+const normalizeName = (value: string) => value.toLowerCase().replace(/[.\s]/g, "");
+
+const normalizedAuthorName = sql`replace(replace(lower(${authors.name}), '.', ''), ' ', '')`;
+
 server.tool({ name: "get_books", description: "Holt eine Liste aller Bücher" }, async () => {
-  const result = await db.select().from(books);
+  const result = await db
+    .select({
+      id: books.id,
+      title: books.title,
+      isbn: books.isbn,
+      year: books.year,
+      author: authors.name,
+    })
+    .from(books)
+    .leftJoin(authors, eq(books.authorId, authors.id));
   return JSON.stringify(result, null, 2);
 });
 
@@ -23,8 +36,15 @@ server.tool(
   },
   async (args) => {
     const result = await db
-      .select()
+      .select({
+        id: books.id,
+        title: books.title,
+        isbn: books.isbn,
+        year: books.year,
+        author: authors.name,
+      })
       .from(books)
+      .leftJoin(authors, eq(books.authorId, authors.id))
       .where(ilike(books.title, `%${args.suchbegriff}%`));
     return JSON.stringify(result, null, 2);
   },
@@ -54,33 +74,67 @@ server.tool(
     }),
   },
   async ({ title, authorName, isbn, year }) => {
-    const authorRecords = await db
-      .select()
-      .from(authors)
-      .where(ilike(authors.name, authorName))
-      .limit(1);
+    const newBook = await db.transaction(async (tx) => {
+      const authorRecords = await tx
+        .select()
+        .from(authors)
+        .where(eq(normalizedAuthorName, normalizeName(authorName)))
+        .limit(1);
 
-    let currentAuthorId: number;
+      let currentAuthorId: number;
 
-    if (authorRecords.length > 0) {
-      currentAuthorId = authorRecords[0].id;
-    } else {
-      const [newAuthor] = await db.insert(authors).values({ name: authorName }).returning();
-      currentAuthorId = newAuthor.id;
-    }
+      if (authorRecords.length > 0) {
+        currentAuthorId = authorRecords[0].id;
+      } else {
+        const [newAuthor] = await tx.insert(authors).values({ name: authorName }).returning();
+        currentAuthorId = newAuthor.id;
+      }
 
-    const [newBook] = await db
-      .insert(books)
-      .values({
-        title,
-        authorId: currentAuthorId,
-        isbn,
-        year,
-      })
-      .returning();
+      const [created] = await tx
+        .insert(books)
+        .values({
+          title,
+          authorId: currentAuthorId,
+          isbn: isbn?.trim() || null,
+          year,
+        })
+        .returning();
+
+      return created;
+    });
 
     return JSON.stringify(newBook, null, 2);
   },
 );
+
+server.tool(
+  {
+    name: "delete_book",
+    description: "Löscht ein Buch anhand seiner Id.",
+    input: z.object({
+      id: z.number().int().positive(),
+    }),
+  },
+  async (id) => {
+    const [deleted] = await db.delete(books).where(eq(books.id, id)).returning();
+
+    return JSON.stringify({ deleted: true, book: deleted }, null, 2);
+  },
+);
+
+// server.tool({
+//   name: "update_book",
+//   description: "Ändert ein bereits bestehendes Buch",
+//   input: z.object({
+//       title: z.string().min(1).optional,
+//       authorName: z.string().min(1).optional(),
+//       isbn: z.string().optional(),
+//       year: z.number().optional(),
+//   })
+// },
+// async ({title, authorName, isbn, year}) => {
+
+// }
+// )
 
 server.run().catch(console.error);

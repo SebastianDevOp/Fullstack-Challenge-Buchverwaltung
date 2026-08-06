@@ -1,6 +1,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useDebouncedCallback } from "use-debounce";
 import { createBookAction, deleteBookAction, updateBookAction } from "@/app/books/action";
 import type { Book } from "@/types/models";
 
@@ -44,10 +45,13 @@ export function useBooksController(q: string, totalCount: number, pageSize: numb
     router.replace(`${pathname}?${params.toString()}`);
   };
 
+  // --- DEBOUNCE ---
+  const debouncedUpdateUrl = useDebouncedCallback(updateUrl, 300);
+
   // --- HANDLER FÜR SUCHE & PAGINIERUNG ---
   const handleSearch = (term: string) => {
     setInputValue(term);
-    updateUrl({ q: term, page: 1 });
+    debouncedUpdateUrl({ q: term, page: 1 });
   };
 
   const handlePageChange = (newPage: number) => {
@@ -72,6 +76,7 @@ export function useBooksController(q: string, totalCount: number, pageSize: numb
       if (error instanceof Error) {
         toast.error("Ein Fehler ist aufgetreten.");
       }
+      throw error;
     }
   };
 

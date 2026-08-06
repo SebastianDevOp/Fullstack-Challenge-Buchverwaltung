@@ -48,9 +48,11 @@ export function useForm<T>({ initialValue, onSubmit, validate }: UseFormOption<T
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!hasErrors) {
-      await onSubmit(formData);
-      setFormData(initialValue);
-      setTouched({});
+      try {
+        await onSubmit(formData);
+        setFormData(initialValue);
+        setTouched({});
+      } catch {}
     } else {
       console.warn("Formular enthält Fehler und kann nicht abgesendet werden.");
     }

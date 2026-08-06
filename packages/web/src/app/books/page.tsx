@@ -1,6 +1,14 @@
 import { authors, books, db } from "@book-manager/database";
 import { and, count, ilike, type SQL } from "drizzle-orm";
+import z from "zod";
 import { BooksClientView } from "./BooksClientView";
+
+// --- ZOD-SCHEMA ----
+
+const paramsSchema = z.object({
+  q: z.string().optional().default(""),
+  page: z.coerce.number().int().positive().max(999).catch(1),
+});
 
 export default async function BooksPage({
   searchParams,
@@ -8,8 +16,9 @@ export default async function BooksPage({
   searchParams: Promise<{ q?: string; page?: string }>;
 }) {
   const resolvedSearchParams = await searchParams;
-  const q = resolvedSearchParams.q || "";
-  const page = Number(resolvedSearchParams.page) || 1;
+  const parsedSearchParams = paramsSchema.parse(resolvedSearchParams);
+  const q = parsedSearchParams.q;
+  const page = Math.max(parsedSearchParams.page, 1);
   const pageSize = 20;
 
   const conditions: SQL[] = [];
