@@ -1,5 +1,6 @@
 "use client";
 
+import type { Author, Book } from "@book-manager/database";
 import { useEffect, useRef } from "react";
 import { BookForm } from "@/components/BookForm";
 import { Button } from "@/components/ui/Button";
@@ -7,7 +8,6 @@ import { Input } from "@/components/ui/Input";
 import { PaginationBar } from "@/components/ui/PaginationBar";
 import { Table } from "@/components/ui/Table";
 import { useBooksController } from "@/hooks/useBooksController";
-import type { Author, Book } from "@/types/models";
 
 const TABLE_HEADERS = ["Titel", "Autor", "Erscheinungsjahr"];
 

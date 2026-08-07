@@ -13,7 +13,9 @@ export const books = pgTable("books", {
   title: text("title").notNull(),
   isbn: text("isbn").unique(),
   year: integer("year"),
-  authorId: integer("authorId").references(() => authors.id),
+  authorId: integer("authorId")
+    .references(() => authors.id)
+    .notNull(),
 });
 
 export type Book = typeof books.$inferSelect;

@@ -1,9 +1,9 @@
+import type { Book } from "@book-manager/database";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
 import { createBookAction, deleteBookAction, updateBookAction } from "@/app/books/action";
-import type { Book } from "@/types/models";
 
 /**
  * Controller-Hook für die Bücher-Übersichtsseite.

@@ -1,6 +1,6 @@
+import type { Book } from "@book-manager/database";
 import { type ChangeEvent, useState } from "react";
 import type { OpenLibraryBook } from "@/hooks/useOpenLibrarySearch";
-import type { Book } from "@/types/models";
 import { Input } from "./Input";
 
 type BookTitleAutocompleteProps = {

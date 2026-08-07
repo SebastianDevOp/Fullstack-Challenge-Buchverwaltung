@@ -1,6 +1,6 @@
+import type { Author } from "@book-manager/database";
 import { useState } from "react";
 import { createAuthorAction } from "@/app/books/action";
-import type { Author } from "@/types/models";
 import type { OpenLibraryBook } from "./useOpenLibrarySearch";
 
 /**

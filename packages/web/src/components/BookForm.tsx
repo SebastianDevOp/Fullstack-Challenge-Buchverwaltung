@@ -1,8 +1,8 @@
 "use client";
+import type { Author, Book } from "@book-manager/database";
 import { useBookSelection } from "@/hooks/useBookSelection";
 import { type Errors, useForm } from "@/hooks/useForm";
 import { useOpenLibrarySearch } from "@/hooks/useOpenLibrarySearch";
-import type { Author, Book } from "@/types/models";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Select } from "../components/ui/Select";
@@ -28,7 +28,7 @@ export const BookForm = ({
         title: initialValues?.title || "",
         authorId: initialValues?.authorId || 0,
         isbn: initialValues?.isbn || "",
-        year: initialValues?.year || undefined,
+        year: initialValues?.year || null,
       },
       onSubmit: onSubmit,
       validate: (formData) => {
@@ -83,14 +83,14 @@ export const BookForm = ({
         <Input
           label="ISBN"
           name="isbn"
-          value={formData?.isbn}
+          value={formData.isbn ?? ""}
           onChange={handleChange}
           required={false}
         />
         <Input
           label="Erscheinungsjahr"
           name="year"
-          value={formData?.year}
+          value={formData.year ?? ""}
           onChange={handleChange}
           required={false}
         />

@@ -1,4 +1,4 @@
-import type { Book } from "@/types/models";
+import type { Book } from "@book-manager/database";
 import { DeleteIcon } from "./DeleteIcon";
 import { EditIcon } from "./EditIcon";
 
