@@ -81,6 +81,13 @@ export function useBooksController(q: string, totalCount: number, pageSize: numb
   };
 
   const handleDeleteClick = async (book: Book) => {
+    const confirmed = window.confirm(
+      `Bist du sicher, dass du das Buch "${book.title}" löschen möchtest?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
     try {
       await deleteBookAction(book.id);
       toast.success("Buch erfolgreich gelöscht!");

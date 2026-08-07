@@ -13,7 +13,7 @@ const book = z.object({
     .trim()
     .optional()
     .transform((v) => v || null),
-  year: z.preprocess((v) => v || undefined, z.coerce.number().int().positive().optional()),
+  year: z.preprocess((v) => v || null, z.coerce.number().int().positive().nullable()),
 });
 
 export async function createAuthorAction(name: string) {
