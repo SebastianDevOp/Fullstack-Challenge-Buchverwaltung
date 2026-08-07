@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { BookForm } from "@/components/BookForm";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -42,6 +43,19 @@ export function BooksClientView({
     totalPages,
   } = useBooksController(q, totalCount, pageSize);
 
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (formVisibility && !dialog.open) {
+      dialog.showModal();
+    } else if (!formVisibility && dialog.open) {
+      dialog.close();
+    }
+  }, [formVisibility]);
+
   // --- HILFSFUNKTIONEN ---
   const getAuthorName = (id: number) => {
     const authorById = authors.find((a) => a.id === Number(id));
@@ -81,26 +95,25 @@ export function BooksClientView({
           totalCount={totalCount}
         />
       </div>
-      <div
-        className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 p-6 transition-transform duration-500 ease-in-out"
-        style={{ transform: formVisibility ? "translateX(0)" : "translateX(100%)" }}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Escape schließt den Dialog nativ */}
+      <dialog
+        ref={dialogRef}
+        onClose={closeForm}
+        onClick={(e) => {
+          if (e.target === dialogRef.current) closeForm();
+        }}
+        className="m-0 ml-auto h-full max-h-full w-full max-w-md border-0 bg-white p-6 shadow-2xl backdrop:bg-black/40"
       >
-        <BookForm
-          key={editingBook?.id || "new"}
-          authors={authors}
-          onSubmit={handleFormSubmit}
-          initialValues={editingBook ? editingBook : undefined}
-          submitLabel={editingBook ? "Aktualisieren" : "Speichern"}
-        />
-      </div>
-
-      {formVisibility && (
-        <button
-          type="button"
-          className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-500"
-          onClick={closeForm}
-        />
-      )}
+        {formVisibility && (
+          <BookForm
+            key={editingBook?.id || "new"}
+            authors={authors}
+            onSubmit={handleFormSubmit}
+            initialValues={editingBook ? editingBook : undefined}
+            submitLabel={editingBook ? "Aktualisieren" : "Speichern"}
+          />
+        )}
+      </dialog>
     </div>
   );
 }
