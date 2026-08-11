@@ -73,6 +73,7 @@ server.tool(
       year: z.number().optional(),
     }),
   },
+  // Läuft hier mit Transaktion, da hier mehrere Operation ablaufen
   async ({ title, authorName, isbn, year }) => {
     const newBook = await db.transaction(async (tx) => {
       const authorRecords = await tx

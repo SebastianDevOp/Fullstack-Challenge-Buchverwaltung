@@ -10,7 +10,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "pnpm -r run typecheck",
     "clean": "docker compose down && rm -rf node_modules packages/*/node_modules packages/*/.next packages/*/dist packages/*/.turbo"
   },
   "pnpm": {
