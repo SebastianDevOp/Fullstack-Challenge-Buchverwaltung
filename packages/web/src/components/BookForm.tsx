@@ -90,6 +90,7 @@ export const BookForm = ({
         <Input
           label="Erscheinungsjahr"
           name="year"
+          type="number"
           value={formData.year ?? ""}
           onChange={handleChange}
           required={false}

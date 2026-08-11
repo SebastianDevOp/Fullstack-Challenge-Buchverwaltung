@@ -18,19 +18,19 @@ export default async function BooksPage({
   if (q) {
     conditions.push(ilike(books.title, `%${q}%`));
   }
-  const paginatedBooksData = await db
-    .select()
-    .from(books)
-    .where(and(...conditions))
-    .limit(pageSize)
-    .offset((page - 1) * pageSize);
-
-  const [totalCount] = await db
-    .select({ count: count() })
-    .from(books)
-    .where(and(...conditions));
-
-  const allAuthors = await db.select().from(authors);
+  const [paginatedBooksData, [totalCount], allAuthors] = await Promise.all([
+    db
+      .select()
+      .from(books)
+      .where(and(...conditions))
+      .limit(pageSize)
+      .offset((page - 1) * pageSize),
+    db
+      .select({ count: count() })
+      .from(books)
+      .where(and(...conditions)),
+    db.select().from(authors),
+  ]);
 
   return (
     <BooksClientView

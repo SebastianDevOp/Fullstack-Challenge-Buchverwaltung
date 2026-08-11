@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "biome check .",
     "typecheck": "tsc --noEmit",
-    "test" : "vitest"
+    "test" : "vitest run"
   },
   "dependencies": {
     "@book-manager/database": "workspace:*",
