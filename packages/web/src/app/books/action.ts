@@ -4,17 +4,7 @@ import { authors, books, db } from "@book-manager/database";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-
-const book = z.object({
-  title: z.string().trim().min(1),
-  authorId: z.coerce.number().int().positive(),
-  isbn: z
-    .string()
-    .trim()
-    .optional()
-    .transform((v) => v || null),
-  year: z.preprocess((v) => v || null, z.coerce.number().int().positive().nullable()),
-});
+import { bookSchema } from "./bookSchema";
 
 export async function createAuthorAction(name: string) {
   const [newAuthor] = await db.insert(authors).values({ name }).returning();
@@ -24,13 +14,15 @@ export async function createAuthorAction(name: string) {
 }
 
 export async function createBookAction(input: unknown) {
-  await db.insert(books).values(book.parse(input));
+  await db.insert(books).values(bookSchema.parse(input));
 
   revalidatePath("/books");
 }
 
 export async function updateBookAction(input: unknown) {
-  const { id, ...data } = book.extend({ id: z.coerce.number().int().positive() }).parse(input);
+  const { id, ...data } = bookSchema
+    .extend({ id: z.coerce.number().int().positive() })
+    .parse(input);
 
   await db.update(books).set(data).where(eq(books.id, id));
 
