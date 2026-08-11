@@ -43,10 +43,7 @@ export const Table = ({
               const authorName = getAuthorName(currentAuthorId);
 
               return (
-                <tr
-                  key={book?.id ?? Math.random()}
-                  className="transition-colors duration-150 hover:bg-gray-50/50"
-                >
+                <tr key={book?.id} className="transition-colors duration-150 hover:bg-gray-50/50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">
                     {book?.title ?? "Unbekannter Titel"}
                   </td>

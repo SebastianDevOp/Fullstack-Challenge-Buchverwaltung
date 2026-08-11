@@ -115,8 +115,16 @@ server.tool(
       id: z.number().int().positive(),
     }),
   },
-  async (id) => {
+  async ({ id }) => {
     const [deleted] = await db.delete(books).where(eq(books.id, id)).returning();
+
+    if (!deleted) {
+      return JSON.stringify(
+        { deleted: false, message: `Kein Buch mit ID ${id} gefunden.` },
+        null,
+        2,
+      );
+    }
 
     return JSON.stringify({ deleted: true, book: deleted }, null, 2);
   },
