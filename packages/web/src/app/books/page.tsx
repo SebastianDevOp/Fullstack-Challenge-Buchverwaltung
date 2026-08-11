@@ -1,14 +1,7 @@
 import { authors, books, db } from "@book-manager/database";
 import { and, count, ilike, type SQL } from "drizzle-orm";
-import z from "zod";
 import { BooksClientView } from "./BooksClientView";
-
-// --- ZOD-SCHEMA ----
-
-const paramsSchema = z.object({
-  q: z.string().optional().default(""),
-  page: z.coerce.number().int().positive().max(999).catch(1),
-});
+import { paramsSchema } from "./paramsSchema";
 
 export default async function BooksPage({
   searchParams,
