@@ -1,16 +1,12 @@
-import { authors, books, db } from "@book-manager/database/node";
+import { authors, books, db, findOrCreateAuthor } from "@book-manager/database/node";
 import { FastMCP } from "@prefecthq/fastmcp-ts/server";
-import { eq, ilike, sql } from "drizzle-orm";
+import { eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 
 const server = new FastMCP({
   name: "buchverwaltungs-mcp",
   version: "1.0.0",
 });
-
-const normalizeName = (value: string) => value.toLowerCase().replace(/[.\s]/g, "");
-
-const normalizedAuthorName = sql`replace(replace(lower(${authors.name}), '.', ''), ' ', '')`;
 
 server.tool({ name: "get_books", description: "Holt eine Liste aller Bücher" }, async () => {
   const result = await db
@@ -76,26 +72,13 @@ server.tool(
   // Läuft hier mit Transaktion, da hier mehrere Operation ablaufen
   async ({ title, authorName, isbn, year }) => {
     const newBook = await db.transaction(async (tx) => {
-      const authorRecords = await tx
-        .select()
-        .from(authors)
-        .where(eq(normalizedAuthorName, normalizeName(authorName)))
-        .limit(1);
-
-      let currentAuthorId: number;
-
-      if (authorRecords.length > 0) {
-        currentAuthorId = authorRecords[0].id;
-      } else {
-        const [newAuthor] = await tx.insert(authors).values({ name: authorName }).returning();
-        currentAuthorId = newAuthor.id;
-      }
+      const author = await findOrCreateAuthor(tx, authorName);
 
       const [created] = await tx
         .insert(books)
         .values({
           title,
-          authorId: currentAuthorId,
+          authorId: author.id,
           isbn: isbn?.trim() || null,
           year,
         })

@@ -1,16 +1,18 @@
 "use server";
 
-import { authors, books, db } from "@book-manager/database";
+import { books, db, findOrCreateAuthor } from "@book-manager/database";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { bookSchema } from "./bookSchema";
 
-export async function createAuthorAction(name: string) {
-  const [newAuthor] = await db.insert(authors).values({ name }).returning();
+const authorNameSchema = z.string().trim().min(1);
+
+export async function createAuthorAction(name: unknown) {
+  const author = await findOrCreateAuthor(db, authorNameSchema.parse(name));
   revalidatePath("/books");
 
-  return newAuthor;
+  return author;
 }
 
 export async function createBookAction(input: unknown) {

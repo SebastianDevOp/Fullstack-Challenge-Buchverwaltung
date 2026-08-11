@@ -1,13 +1,15 @@
 import type { Author } from "@book-manager/database";
 import { useState } from "react";
+import { toast } from "sonner";
 import { createAuthorAction } from "@/app/books/action";
 import type { OpenLibraryBook } from "./useOpenLibrarySearch";
 
 /**
  * Hook für die Buchauswahl via OpenLibrary API.
  * Isoliert den lokalen Autoren-State und die Logik zum Befüllen des Formulars.
- * Zudem automatische Anlegen fehlender Autoren über Server-ACtions.
- * @param initialAuthors - Initale Lister der Autoren aus dem DB.
+ * Der Autor wird serverseitig aufgelöst, damit keine Dubletten entstehen.
+ *
+ * @param initialAuthors - Initiale Liste der Autoren aus der DB.
  * @param updateFormValue - Funktion, um die Felder des Hauptformulars zu aktualisieren.
  * @returns Objekt mit Autoren-State und dem Auswahl-Handler.
  */
@@ -23,24 +25,14 @@ export function useBookSelection(
     updateFormValue("title", book.title);
     if (book.isbn) updateFormValue("isbn", book.isbn);
     if (book.year) updateFormValue("year", book.year);
-    if (book.authorName) {
-      const searchName = book.authorName.toLowerCase();
-      const matchedAuthor = localAuthors.find(
-        (a: Author) =>
-          a.name.toLowerCase().includes(searchName) || searchName.includes(a.name.toLowerCase()),
-      );
+    if (!book.authorName) return;
 
-      if (matchedAuthor) {
-        updateFormValue("authorId", matchedAuthor.id);
-      } else {
-        try {
-          const newAuthor = await createAuthorAction(book.authorName);
-          setLocalAuthors((prev: Author[]) => [...prev, newAuthor]);
-          updateFormValue("authorId", newAuthor.id);
-        } catch (error) {
-          console.log("Fehler beim automatischen Anlegen des Authors.", error);
-        }
-      }
+    try {
+      const author = await createAuthorAction(book.authorName);
+      setLocalAuthors((prev) => (prev.some((a) => a.id === author.id) ? prev : [...prev, author]));
+      updateFormValue("authorId", author.id);
+    } catch {
+      toast.error("Der Autor konnte nicht zugeordnet werden.");
     }
   };
 
