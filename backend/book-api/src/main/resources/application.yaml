@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: book-api
+  datasource:
+    url: jdbc:postgresql://localhost:5432/challenge
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
