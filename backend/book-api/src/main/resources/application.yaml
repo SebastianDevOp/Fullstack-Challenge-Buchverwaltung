@@ -5,7 +5,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/challenge
     username: postgres
     password: postgres
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+    show-sql: true
