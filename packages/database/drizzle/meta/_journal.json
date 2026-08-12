@@ -15,6 +15,13 @@
       "when": 1786107611974,
       "tag": "0001_modern_venom",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786520613589,
+      "tag": "0002_aberrant_skrulls",
+      "breakpoints": true
     }
   ]
 }

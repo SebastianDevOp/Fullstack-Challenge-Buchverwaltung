@@ -13,7 +13,7 @@ export const books = pgTable("books", {
   title: text("title").notNull(),
   isbn: text("isbn").unique(),
   year: integer("year"),
-  authorId: integer("authorId")
+  authorId: integer("author_id")
     .references(() => authors.id)
     .notNull(),
 });
