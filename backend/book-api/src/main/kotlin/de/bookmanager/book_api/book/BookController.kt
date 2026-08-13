@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -76,5 +77,32 @@ class BookController(val bookRepository: BookRepository, val authorRepository: A
                 val finalBook = bookRepository.save(createdBook)
 
                 return finalBook.toDto()
+        }
+
+        @PutMapping("/{id}")
+        fun updateBook(
+                @PathVariable("id") id: Int,
+                @Valid @RequestBody request: CreateBookRequest
+        ): BookDto {
+
+                val bookToUpdate: Book? = bookRepository.findBookById(id)
+
+                if (bookToUpdate == null) {
+                        throw ResponseStatusException(HttpStatus.NOT_FOUND)
+                }
+                val author: Author? = authorRepository.findAuthorById(request.authorId!!)
+
+                if (author == null) {
+                        throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+                }
+
+                bookToUpdate.title = request.title
+                bookToUpdate.author = author
+                bookToUpdate.isbn = request.isbn
+                bookToUpdate.year = request.year
+
+                bookRepository.save(bookToUpdate)
+
+                return bookToUpdate.toDto()
         }
 }
