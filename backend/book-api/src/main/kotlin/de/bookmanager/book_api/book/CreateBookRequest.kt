@@ -1,5 +1,6 @@
 package de.bookmanager.book_api.book
 
+import de.bookmanager.book_api.author.Author
 import jakarta.validation.constraints.*
 
 data class CreateBookRequest(
@@ -18,6 +19,14 @@ data class CreateBookRequest(
         }
     }
 }
+
+fun CreateBookRequest.toBook(author: Author) =
+        Book(
+                title = this.title,
+                author = author,
+                isbn = this.isbn,
+                year = this.year,
+        )
 
 // title	Pflicht, nicht leer, wird getrimmt
 // authorId	Pflicht, ganze Zahl, größer als 0

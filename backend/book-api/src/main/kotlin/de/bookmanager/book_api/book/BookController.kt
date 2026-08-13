@@ -1,12 +1,18 @@
 package de.bookmanager.book_api.book
 
+import de.bookmanager.book_api.author.Author
+import de.bookmanager.book_api.author.AuthorRepository
+import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 
@@ -19,7 +25,7 @@ data class BookPageResponse(
 
 @RestController
 @RequestMapping("/api/books")
-class BookController(val bookRepository: BookRepository) {
+class BookController(val bookRepository: BookRepository, val authorRepository: AuthorRepository) {
 
         @GetMapping
         fun getBooks(
@@ -53,5 +59,22 @@ class BookController(val bookRepository: BookRepository) {
                 }
 
                 return book.toDto()
+        }
+
+        @PostMapping
+        @ResponseStatus(HttpStatus.CREATED)
+        fun createBook(@Valid @RequestBody request: CreateBookRequest): BookDto {
+
+                val author: Author? = authorRepository.findAuthorById(request.authorId!!)
+
+                if (author == null) {
+                        throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+                }
+
+                val createdBook = request.toBook(author)
+
+                val finalBook = bookRepository.save(createdBook)
+
+                return finalBook.toDto()
         }
 }
