@@ -13,4 +13,6 @@ interface BookRepository : JpaRepository<Book, Int> {
 
     @EntityGraph(attributePaths = ["author"])
     fun findByTitleContainingIgnoreCase(query: String, pageable: Pageable): Page<Book>
+
+    @EntityGraph(attributePaths = ["author"]) fun findBookById(id: Int): Book?
 }
