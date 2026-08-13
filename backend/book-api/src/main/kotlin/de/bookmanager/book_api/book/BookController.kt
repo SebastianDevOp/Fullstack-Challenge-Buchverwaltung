@@ -19,7 +19,7 @@ data class BookPageResponse(
 class BookController(val bookRepository: BookRepository) {
 
         @GetMapping
-        fun searchBooks(
+        fun getBooks(
                 @RequestParam(defaultValue = "") q: String,
                 pageable: Pageable
         ): BookPageResponse {
