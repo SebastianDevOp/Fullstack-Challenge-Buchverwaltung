@@ -1,9 +1,9 @@
 "use server";
 
-import { books, db, findOrCreateAuthor } from "@book-manager/database";
-import { eq } from "drizzle-orm";
+import { db, findOrCreateAuthor } from "@book-manager/database";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { createBook, deleteBook, updateBook } from "@/lib/booksApi";
 import { bookSchema } from "./bookSchema";
 
 const authorNameSchema = z.string().trim().min(1);
@@ -16,7 +16,7 @@ export async function createAuthorAction(name: unknown) {
 }
 
 export async function createBookAction(input: unknown) {
-  await db.insert(books).values(bookSchema.parse(input));
+  await createBook(bookSchema.parse(input));
 
   revalidatePath("/books");
 }
@@ -26,13 +26,12 @@ export async function updateBookAction(input: unknown) {
     .extend({ id: z.coerce.number().int().positive() })
     .parse(input);
 
-  await db.update(books).set(data).where(eq(books.id, id));
+  await updateBook(id, data);
 
   revalidatePath("/books");
 }
 
 export async function deleteBookAction(bookID: number) {
-  await db.delete(books).where(eq(books.id, bookID));
-
+  await deleteBook(bookID);
   revalidatePath("/books");
 }

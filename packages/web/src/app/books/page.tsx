@@ -1,5 +1,4 @@
-import { authors, db } from "@book-manager/database";
-import { fetchBooks } from "@/lib/booksApi";
+import { fetchAuthors, fetchBooks } from "@/lib/booksApi";
 import { BooksClientView } from "./BooksClientView";
 import { paramsSchema } from "./paramsSchema";
 
@@ -16,7 +15,7 @@ export default async function BooksPage({
 
   const paginatedBooksData = await fetchBooks({ q: q, page: page, size: pageSize });
 
-  const allAuthors = await db.select().from(authors);
+  const allAuthors = await fetchAuthors();
 
   return (
     <BooksClientView
