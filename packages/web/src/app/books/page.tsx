@@ -2,6 +2,7 @@ import { authors, books, db } from "@book-manager/database";
 import { and, count, ilike, type SQL } from "drizzle-orm";
 import { BooksClientView } from "./BooksClientView";
 import { paramsSchema } from "./paramsSchema";
+import { fetchBooks } from "@/lib/booksApi";
 
 export default async function BooksPage({
   searchParams,
@@ -31,6 +32,18 @@ export default async function BooksPage({
       .where(and(...conditions)),
     db.select().from(authors),
   ]);
+
+  const kotlinResult = await fetchBooks({ size: 3 });
+  console.log(
+    "Kotlin Backend",
+    kotlinResult.total,
+    kotlinResult.data.map((b) => b.title),
+  );
+  console.log(
+    "Drizzle:",
+    totalCount?.count,
+    paginatedBooksData.map((b) => b.title),
+  );
 
   return (
     <BooksClientView
