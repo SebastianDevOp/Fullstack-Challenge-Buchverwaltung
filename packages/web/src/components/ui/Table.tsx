@@ -1,23 +1,17 @@
 import type { Book } from "@book-manager/database";
+import type { ApiBook } from "@/lib/booksApi";
 import { DeleteIcon } from "./DeleteIcon";
 import { EditIcon } from "./EditIcon";
 
 // --- PROPS ---
 type BooksTableProps = {
-  books: Book[];
+  books: ApiBook[];
   headers: string[];
   onDeleteClick: (book: Book) => void;
   onUpdateClick: (book: Book) => void;
-  getAuthorName: (authorID: number) => string;
 };
 
-export const Table = ({
-  books,
-  headers,
-  onDeleteClick,
-  onUpdateClick,
-  getAuthorName,
-}: BooksTableProps) => {
+export const Table = ({ books, headers, onDeleteClick, onUpdateClick }: BooksTableProps) => {
   return (
     <div className="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
       <div className="overflow-x-auto">
@@ -38,17 +32,14 @@ export const Table = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {books.map((book: Book) => {
-              const currentAuthorId = book?.authorId ?? 0;
-              const authorName = getAuthorName(currentAuthorId);
-
+            {books.map((book: ApiBook) => {
               return (
                 <tr key={book?.id} className="transition-colors duration-150 hover:bg-gray-50/50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">
                     {book?.title ?? "Unbekannter Titel"}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap overflow-hidden text-ellipsis">
-                    {authorName}
+                    {book.author}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                     {book?.year ?? "Unbekanntes Jahr"}

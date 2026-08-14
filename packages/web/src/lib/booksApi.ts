@@ -4,6 +4,7 @@ export type ApiBook = {
   isbn: string | null;
   year: number | null;
   author: string;
+  authorId: number;
 };
 
 export type ApiBookPage = {

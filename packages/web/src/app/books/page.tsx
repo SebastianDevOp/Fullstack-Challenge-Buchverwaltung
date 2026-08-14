@@ -1,8 +1,7 @@
-import { authors, books, db } from "@book-manager/database";
-import { and, count, ilike, type SQL } from "drizzle-orm";
+import { authors, db } from "@book-manager/database";
+import { fetchBooks } from "@/lib/booksApi";
 import { BooksClientView } from "./BooksClientView";
 import { paramsSchema } from "./paramsSchema";
-import { fetchBooks } from "@/lib/booksApi";
 
 export default async function BooksPage({
   searchParams,
@@ -15,41 +14,15 @@ export default async function BooksPage({
   const page = Math.max(parsedSearchParams.page, 1);
   const pageSize = 20;
 
-  const conditions: SQL[] = [];
-  if (q) {
-    conditions.push(ilike(books.title, `%${q}%`));
-  }
-  const [paginatedBooksData, [totalCount], allAuthors] = await Promise.all([
-    db
-      .select()
-      .from(books)
-      .where(and(...conditions))
-      .limit(pageSize)
-      .offset((page - 1) * pageSize),
-    db
-      .select({ count: count() })
-      .from(books)
-      .where(and(...conditions)),
-    db.select().from(authors),
-  ]);
+  const paginatedBooksData = await fetchBooks({ q: q, page: page, size: pageSize });
 
-  const kotlinResult = await fetchBooks({ size: 3 });
-  console.log(
-    "Kotlin Backend",
-    kotlinResult.total,
-    kotlinResult.data.map((b) => b.title),
-  );
-  console.log(
-    "Drizzle:",
-    totalCount?.count,
-    paginatedBooksData.map((b) => b.title),
-  );
+  const allAuthors = await db.select().from(authors);
 
   return (
     <BooksClientView
-      initialBooks={paginatedBooksData}
+      initialBooks={paginatedBooksData.data}
       authors={allAuthors}
-      totalCount={totalCount?.count ?? 0}
+      totalCount={paginatedBooksData.total}
       currentPage={page}
       q={q}
       pageSize={pageSize}

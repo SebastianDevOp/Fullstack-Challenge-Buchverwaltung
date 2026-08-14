@@ -1,6 +1,6 @@
 "use client";
 
-import type { Author, Book } from "@book-manager/database";
+import type { Author } from "@book-manager/database";
 import { useEffect, useRef } from "react";
 import { BookForm } from "@/components/BookForm";
 import { Button } from "@/components/ui/Button";
@@ -8,12 +8,13 @@ import { Input } from "@/components/ui/Input";
 import { PaginationBar } from "@/components/ui/PaginationBar";
 import { Table } from "@/components/ui/Table";
 import { useBooksController } from "@/hooks/useBooksController";
+import type { ApiBook } from "@/lib/booksApi";
 
 const TABLE_HEADERS = ["Titel", "Autor", "Erscheinungsjahr"];
 
 // --- PROPS ---
 type BooksClientViewProps = {
-  initialBooks: Book[];
+  initialBooks: ApiBook[];
   authors: Author[];
   totalCount: number;
   currentPage: number;
@@ -56,12 +57,6 @@ export function BooksClientView({
     }
   }, [formVisibility]);
 
-  // --- HILFSFUNKTIONEN ---
-  const getAuthorName = (id: number) => {
-    const authorById = authors.find((a) => a.id === Number(id));
-    return authorById ? authorById.name : "Unbekannt";
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex flex-row gap-6 items-end">
@@ -83,7 +78,6 @@ export function BooksClientView({
           books={initialBooks}
           headers={TABLE_HEADERS}
           onDeleteClick={handleDeleteClick}
-          getAuthorName={getAuthorName}
           onUpdateClick={(book) => openEditForm(book)}
         />
       </div>

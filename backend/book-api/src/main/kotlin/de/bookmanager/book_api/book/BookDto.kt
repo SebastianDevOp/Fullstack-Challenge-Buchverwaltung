@@ -6,6 +6,7 @@ data class BookDto(
         val isbn: String?,
         val year: Int?,
         val author: String,
+        val authorId: Int?,
 )
 
 fun Book.toDto() =
@@ -15,4 +16,5 @@ fun Book.toDto() =
                 isbn = this.isbn,
                 year = this.year,
                 author = this.author.name,
+                authorId = this.author.id,
         )
