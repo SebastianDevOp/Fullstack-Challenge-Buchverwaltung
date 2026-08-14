@@ -1,6 +1,5 @@
 "use client";
 
-import type { Author } from "@book-manager/database";
 import { useEffect, useRef } from "react";
 import { BookForm } from "@/components/BookForm";
 import { Button } from "@/components/ui/Button";
@@ -8,14 +7,14 @@ import { Input } from "@/components/ui/Input";
 import { PaginationBar } from "@/components/ui/PaginationBar";
 import { Table } from "@/components/ui/Table";
 import { useBooksController } from "@/hooks/useBooksController";
-import type { ApiBook } from "@/lib/booksApi";
+import type { ApiAuthor, ApiBook } from "@/lib/booksApi";
 
 const TABLE_HEADERS = ["Titel", "Autor", "Erscheinungsjahr"];
 
 // --- PROPS ---
 type BooksClientViewProps = {
   initialBooks: ApiBook[];
-  authors: Author[];
+  authors: ApiAuthor[];
   totalCount: number;
   currentPage: number;
   q: string;

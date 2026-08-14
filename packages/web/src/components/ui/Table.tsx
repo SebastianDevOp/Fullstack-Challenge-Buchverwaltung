@@ -1,4 +1,3 @@
-import type { Book } from "@book-manager/database";
 import type { ApiBook } from "@/lib/booksApi";
 import { DeleteIcon } from "./DeleteIcon";
 import { EditIcon } from "./EditIcon";
@@ -7,8 +6,8 @@ import { EditIcon } from "./EditIcon";
 type BooksTableProps = {
   books: ApiBook[];
   headers: string[];
-  onDeleteClick: (book: Book) => void;
-  onUpdateClick: (book: Book) => void;
+  onDeleteClick: (book: ApiBook) => void;
+  onUpdateClick: (book: ApiBook) => void;
 };
 
 export const Table = ({ books, headers, onDeleteClick, onUpdateClick }: BooksTableProps) => {

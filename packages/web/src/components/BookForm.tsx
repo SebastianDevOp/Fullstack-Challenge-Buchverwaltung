@@ -1,17 +1,25 @@
 "use client";
-import type { Author, Book } from "@book-manager/database";
 import { useBookSelection } from "@/hooks/useBookSelection";
 import { type Errors, useForm } from "@/hooks/useForm";
 import { useOpenLibrarySearch } from "@/hooks/useOpenLibrarySearch";
+import type { ApiAuthor, ApiBook } from "@/lib/booksApi";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Select } from "../components/ui/Select";
 import { BookTitleAutocomplete } from "./ui/BookTitleAutocomplete";
 
+export type BookFormValues = {
+  id?: number;
+  title: string;
+  authorId: number;
+  isbn: string | null;
+  year: number | null;
+};
+
 export type BookFormProps = {
-  initialValues?: Book;
-  authors: Author[];
-  onSubmit: (values: Book) => Promise<void> | void;
+  initialValues?: ApiBook;
+  authors: ApiAuthor[];
+  onSubmit: (values: BookFormValues) => Promise<void> | void;
   submitLabel?: string;
 };
 
@@ -22,7 +30,7 @@ export const BookForm = ({
   submitLabel = "Speichern",
 }: BookFormProps) => {
   const { formData, handleSubmit, handleChange, handleBlur, touched, errors, hasErrors } =
-    useForm<Book>({
+    useForm<BookFormValues>({
       initialValue: {
         id: initialValues?.id || 0,
         title: initialValues?.title || "",

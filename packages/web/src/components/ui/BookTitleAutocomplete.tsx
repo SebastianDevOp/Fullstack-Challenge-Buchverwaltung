@@ -1,5 +1,5 @@
-import type { Book } from "@book-manager/database";
 import { type ChangeEvent, useState } from "react";
+import type { BookFormValues } from "@/components/BookForm";
 import type { OpenLibraryBook } from "@/hooks/useOpenLibrarySearch";
 import { Input } from "./Input";
 
@@ -7,9 +7,9 @@ type BookTitleAutocompleteProps = {
   results: OpenLibraryBook[];
   isSearching: boolean;
   handleSelectBook: (book: OpenLibraryBook) => void;
-  formData: Book;
-  touched: Partial<Record<keyof Book, boolean>>;
-  errors: Partial<Record<keyof Book, string>>;
+  formData: BookFormValues;
+  touched: Partial<Record<keyof BookFormValues, boolean>>;
+  errors: Partial<Record<keyof BookFormValues, string>>;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
 };

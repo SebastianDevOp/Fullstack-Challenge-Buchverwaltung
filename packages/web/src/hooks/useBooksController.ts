@@ -1,9 +1,10 @@
-import type { Book } from "@book-manager/database";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
 import { createBookAction, deleteBookAction, updateBookAction } from "@/app/books/action";
+import type { BookFormValues } from "@/components/BookForm";
+import type { ApiBook } from "@/lib/booksApi";
 
 /**
  * Controller-Hook für die Bücher-Übersichtsseite.
@@ -27,7 +28,7 @@ export function useBooksController(q: string, totalCount: number, pageSize: numb
   // --- LOKALER STATE ---
   const [inputValue, setInputValue] = useState(q);
   const [formVisibility, setFormVisibility] = useState(false);
-  const [editingBook, setEditingBook] = useState<Book | null>(null);
+  const [editingBook, setEditingBook] = useState<ApiBook | null>(null);
 
   // --- HILFSFUNKTION ---
   const updateUrl = (newParams: { q?: string; page?: number }) => {
@@ -61,7 +62,7 @@ export function useBooksController(q: string, totalCount: number, pageSize: numb
   };
 
   // --- HANDLER FÜR SERVER ACTIONS  ---
-  const handleFormSubmit = async (formData: Book) => {
+  const handleFormSubmit = async (formData: BookFormValues) => {
     try {
       if (editingBook) {
         await updateBookAction(formData);
@@ -80,7 +81,7 @@ export function useBooksController(q: string, totalCount: number, pageSize: numb
     }
   };
 
-  const handleDeleteClick = async (book: Book) => {
+  const handleDeleteClick = async (book: ApiBook) => {
     const confirmed = window.confirm(
       `Bist du sicher, dass du das Buch "${book.title}" löschen möchtest?`,
     );
@@ -104,7 +105,7 @@ export function useBooksController(q: string, totalCount: number, pageSize: numb
     setFormVisibility(true);
   };
 
-  const openEditForm = (book: Book) => {
+  const openEditForm = (book: ApiBook) => {
     setEditingBook(book);
     setFormVisibility(true);
   };

@@ -1,7 +1,7 @@
-import type { Author } from "@book-manager/database";
 import { useState } from "react";
 import { toast } from "sonner";
 import { createAuthorAction } from "@/app/books/action";
+import type { ApiAuthor } from "@/lib/booksApi";
 import type { OpenLibraryBook } from "./useOpenLibrarySearch";
 
 /**
@@ -14,7 +14,7 @@ import type { OpenLibraryBook } from "./useOpenLibrarySearch";
  * @returns Objekt mit Autoren-State und dem Auswahl-Handler.
  */
 export function useBookSelection(
-  initialAuthors: Author[],
+  initialAuthors: ApiAuthor[],
   updateFormValue: (name: string, value: string | number) => void,
 ) {
   // --- LOKALER STATE ---
