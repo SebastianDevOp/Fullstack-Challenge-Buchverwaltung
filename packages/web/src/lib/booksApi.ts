@@ -26,6 +26,16 @@ export type ApiBookInput = {
   year: number | null;
 };
 
+export class ApiError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 function apiBaseUrl(): string {
   const url = process.env.BOOKS_API_URL;
   if (!url) {
@@ -39,7 +49,10 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
   const response = await fetch(`${apiBaseUrl()}${path}`, { cache: "no-store", ...init });
 
   if (!response.ok) {
-    throw new Error(`${init?.method ?? "GET"} ${path} fehlgeschlagen (HTTP ${response.status})`);
+    throw new ApiError(
+      response.status,
+      `${init?.method ?? "GET"} ${path} fehlgeschlagen (HTTP ${response.status})`,
+    );
   }
 
   return response;

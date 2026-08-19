@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
@@ -105,6 +106,34 @@ class BookControllerTest {
     fun `Löschen eines unbekannten Buches liefert 404`() {
 
         mockMvc.delete("/api/books/999").andExpect { status { isNotFound() } }
+    }
+
+    @Test
+    fun `Doppelte ISBN liefert 409`() {
+
+        val author = Author(id = 1, name = "Testauthor")
+        given(authorRepository.findAuthorById(1)).willReturn(author)
+
+        given(bookRepository.save(any()))
+                .willThrow(
+                        DataIntegrityViolationException(
+                                "duplicate key value violates unique constraint"
+                        )
+                )
+
+        mockMvc
+                .post("/api/books") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content =
+                            """
+            {
+                "title": "Testbuch",
+                "authorId": 1,
+                "isbn": "9783442155286"
+            }
+        """.trimIndent()
+                }
+                .andExpect { status { isConflict() } }
     }
 }
 

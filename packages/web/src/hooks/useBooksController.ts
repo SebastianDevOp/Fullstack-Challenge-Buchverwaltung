@@ -64,13 +64,16 @@ export function useBooksController(q: string, totalCount: number, pageSize: numb
   // --- HANDLER FÜR SERVER ACTIONS  ---
   const handleFormSubmit = async (formData: BookFormValues) => {
     try {
-      if (editingBook) {
-        await updateBookAction(formData);
-        toast.success("Buch erfolgreich aktualisiert!");
-      } else {
-        await createBookAction(formData);
-        toast.success("Buch erfolgreich erstellt!");
+      const result = editingBook
+        ? await updateBookAction(formData)
+        : await createBookAction(formData);
+
+      if (result?.error === "duplicate-isbn") {
+        toast.error("Ein Buch mit dieser ISBN existiert bereits.");
+        return;
       }
+
+      toast.success(editingBook ? "Buch erfolgreich aktualisiert!" : "Buch erfolgreich erstellt!");
       setFormVisibility(false);
       setEditingBook(null);
     } catch (error) {
