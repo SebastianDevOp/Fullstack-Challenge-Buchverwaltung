@@ -42,10 +42,17 @@ export default function HomePage() {
         </li>
       </ul>
 
-      <h2>Referenz-Implementierung</h2>
+      <h2>Aktueller Stand</h2>
       <p>
-        Schau dir <code>packages/web/src/app/api/authors/route.ts</code> an – das ist das Muster,
-        das du für die Bücher-Endpunkte verwenden sollst.
+        Die Bücher- und Autoren-Endpunkte liegen inzwischen im Spring-Boot-Service unter{" "}
+        <code>backend/book-api</code>. Das Frontend spricht über Server Actions mit diesem Service
+        und greift nicht mehr selbst auf die Datenbank zu. Die ursprünglichen Routen unter{" "}
+        <code>packages/web/src/app/api/</code> sind als Referenz erhalten geblieben.
+      </p>
+      <p>
+        <code>pnpm dev</code> startet Datenbank, Service und Frontend gemeinsam. Der Service braucht
+        einige Sekunden zum Hochfahren – lädst du die Bücher-Seite sofort, schlägt der erste Aufruf
+        fehl.
       </p>
     </div>
   );
