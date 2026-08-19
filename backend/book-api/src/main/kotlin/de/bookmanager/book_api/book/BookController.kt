@@ -39,7 +39,12 @@ class BookController(val bookRepository: BookRepository, val authorRepository: A
                                 bookRepository.findAll(pageable)
                         } else {
 
-                                bookRepository.findByTitleContainingIgnoreCase(q, pageable)
+                                bookRepository
+                                        .findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(
+                                                q,
+                                                q,
+                                                pageable
+                                        )
                         }
                 val response =
                         BookPageResponse(

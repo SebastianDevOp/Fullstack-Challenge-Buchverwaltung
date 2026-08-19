@@ -62,7 +62,7 @@ export function BooksClientView({
         <div className="flex-1">
           <Input
             value={inputValue}
-            label={"Suche..."}
+            label={"Suche Titel oder Autor"}
             name={"Suche"}
             onChange={(e) => handleSearch(e.target.value)}
           />

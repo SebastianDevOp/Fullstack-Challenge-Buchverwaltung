@@ -7,6 +7,8 @@ import org.mockito.BDDMockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
@@ -134,6 +136,36 @@ class BookControllerTest {
         """.trimIndent()
                 }
                 .andExpect { status { isConflict() } }
+    }
+
+    @Test
+    fun `Suche findet Bücher über den Autorennamen`() {
+
+        val author = Author(id = 1, name = "J.R.R. Tolkien")
+        val book = Book(id = 1, title = "The Lord of the Rings", author = author)
+
+        given(
+                        bookRepository
+                                .findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(
+                                        "Tolkien",
+                                        "Tolkien",
+                                        PageRequest.of(0, 20)
+                                )
+                )
+                .willReturn(PageImpl(listOf(book)))
+
+        mockMvc.get("/api/books?q=Tolkien").andExpect { status { isOk() } }
+    }
+
+    @Test
+    fun `Ohne Suchbegriff wird die vollständige Liste geladen`() {
+
+        val author = Author(id = 1, name = "Testauthor")
+        val book = Book(id = 1, title = "Testbuch", author = author)
+
+        given(bookRepository.findAll(PageRequest.of(0, 20))).willReturn(PageImpl(listOf(book)))
+
+        mockMvc.get("/api/books").andExpect { status { isOk() } }
     }
 }
 
