@@ -9,7 +9,7 @@ import { Table } from "@/components/ui/Table";
 import { useBooksController } from "@/hooks/useBooksController";
 import type { ApiAuthor, ApiBook } from "@/lib/booksApi";
 
-const TABLE_HEADERS = ["Titel", "Autor", "Erscheinungsjahr"];
+const TABLE_HEADERS = ["Cover", "Titel", "Autor", "Jahr"];
 
 // --- PROPS ---
 type BooksClientViewProps = {
@@ -71,7 +71,11 @@ export function BooksClientView({
           {"Buch hinzufügen"}
         </Button>
       </div>
-
+      <div className=""></div>
+      <div
+        className="
+    "
+      ></div>
       <div className="mt-6">
         <Table
           books={initialBooks}

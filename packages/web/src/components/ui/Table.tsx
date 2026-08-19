@@ -1,4 +1,5 @@
 import type { ApiBook } from "@/lib/booksApi";
+import { BookCover } from "./BookCover";
 import { DeleteIcon } from "./DeleteIcon";
 import { EditIcon } from "./EditIcon";
 
@@ -15,6 +16,13 @@ export const Table = ({ books, headers, onDeleteClick, onUpdateClick }: BooksTab
     <div className="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full min-w-full table-fixed border-collapse text-left">
+          <colgroup>
+            <col className="w-[12%]" />
+            <col className="w-[36%]" />
+            <col className="w-[28%]" />
+            <col className="w-[10%]" />
+            <col className="w-[14%]" />
+          </colgroup>
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50/70 context-menu">
               {headers.map((header) => (
@@ -34,13 +42,16 @@ export const Table = ({ books, headers, onDeleteClick, onUpdateClick }: BooksTab
             {books.map((book: ApiBook) => {
               return (
                 <tr key={book?.id} className="transition-colors duration-150 hover:bg-gray-50/50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">
+                  <td className="px-6 py-4">
+                    <BookCover isbn={book.isbn} title={book.title} />
+                  </td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
                     {book?.title ?? "Unbekannter Titel"}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap overflow-hidden text-ellipsis">
+                  <td className="truncate px-6 py-4 text-sm text-gray-600" title={book.author}>
                     {book.author}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                  <td className="px-6 py-4 text-sm text-gray-500">
                     {book?.year ?? "Unbekanntes Jahr"}
                   </td>
                   <td className="px-6 py-4 text-right text-sm space-x-1 whitespace-nowrap">

@@ -4,7 +4,7 @@ export type OpenLibraryBook = {
   key: string;
   title: string;
   authorName?: string;
-  isbn?: number;
+  isbn?: string;
   year?: number;
   coverUrl?: string;
 };
@@ -12,9 +12,9 @@ export type OpenLibraryBook = {
 type OpenLibraryBookDoc = {
   key: string;
   title: string;
-  author_name?: string;
+  author_name?: string[];
   first_publish_year?: number;
-  isbn?: string;
+  isbn?: string[];
   cover_i?: number;
 };
 /**
@@ -42,11 +42,11 @@ export function useOpenLibrarySearch(query: string) {
         const response = await fetch(
           `https://openlibrary.org/search.json?title=${encodeURIComponent(
             query,
-          )}&limit=5&fields=key,title,author_name,first_publish_year,isbn`,
+          )}&limit=5&fields=key,title,author_name,first_publish_year,isbn,cover_i`,
         );
         const data = await response.json();
 
-        const formattedResults = data.docs.map((doc: OpenLibraryBookDoc) => ({
+        const formattedResults: OpenLibraryBook[] = data.docs.map((doc: OpenLibraryBookDoc) => ({
           key: doc.key,
           title: doc.title,
           authorName: doc.author_name?.[0],
