@@ -73,15 +73,9 @@ importers:
 
   packages/mcp:
     dependencies:
-      '@book-manager/database':
-        specifier: workspace:*
-        version: link:../database
       '@prefecthq/fastmcp-ts':
         specifier: ^1.2.1
         version: 1.2.1(hono@4.12.34)
-      drizzle-orm:
-        specifier: 0.45.2
-        version: 0.45.2(@types/pg@8.15.4)(pg@8.16.0)
       zod:
         specifier: ^4.4.3
         version: 4.4.3

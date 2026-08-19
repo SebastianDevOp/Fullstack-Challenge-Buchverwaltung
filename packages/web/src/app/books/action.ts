@@ -1,15 +1,14 @@
 "use server";
 
-import { db, findOrCreateAuthor } from "@book-manager/database";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { createBook, deleteBook, updateBook } from "@/lib/booksApi";
+import { createAuthor, createBook, deleteBook, updateBook } from "@/lib/booksApi";
 import { bookSchema } from "./bookSchema";
 
 const authorNameSchema = z.string().trim().min(1);
 
 export async function createAuthorAction(name: unknown) {
-  const author = await findOrCreateAuthor(db, authorNameSchema.parse(name));
+  const author = await createAuthor(authorNameSchema.parse(name));
   revalidatePath("/books");
 
   return author;

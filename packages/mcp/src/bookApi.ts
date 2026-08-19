@@ -49,20 +49,16 @@ const jsonHeaders = { "Content-Type": "application/json" };
 
 export async function fetchBooks({
   q,
-  page,
   size,
 }: {
   q?: string;
-  page?: number;
   size?: number;
 } = {}): Promise<ApiBookPage> {
   const params = new URLSearchParams();
   if (q) {
     params.set("q", q);
   }
-  if (page) {
-    params.set("page", String(page));
-  }
+
   if (size) {
     params.set("size", String(size));
   }
@@ -79,24 +75,32 @@ export async function fetchAuthors(): Promise<ApiAuthor[]> {
   return result;
 }
 
-export async function createBook(book: ApiBookInput) {
-  await apiFetch("/api/books", {
+export async function createBook(book: ApiBookInput): Promise<ApiBook> {
+  const response = await apiFetch("/api/books", {
     method: "POST",
     headers: jsonHeaders,
     body: JSON.stringify(book),
   });
+  const result: ApiBook = await response.json();
+
+  return result;
 }
 
-export async function updateBook(bookId: number, book: ApiBookInput) {
-  await apiFetch(`/api/books/${bookId}`, {
-    method: "PUT",
-    headers: jsonHeaders,
-    body: JSON.stringify(book),
+export async function deleteBook(bookId: number): Promise<boolean> {
+  const path = `/api/books/${bookId}`;
+  const response = await fetch(`${apiBaseUrl()}${path}`, {
+    method: "DELETE",
   });
-}
 
-export async function deleteBook(bookId: number) {
-  await apiFetch(`/api/books/${bookId}`, { method: "DELETE" });
+  if (response.status === 404) {
+    return false;
+  }
+
+  if (!response.ok) {
+    throw new Error(`DELETE ${path} fehlgeschlagen (HTTP ${response.status})`);
+  }
+
+  return true;
 }
 
 export async function createAuthor(name: string): Promise<ApiAuthor> {

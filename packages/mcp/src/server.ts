@@ -1,25 +1,15 @@
-import { authors, books, db, findOrCreateAuthor } from "@book-manager/database/node";
 import { FastMCP } from "@prefecthq/fastmcp-ts/server";
-import { eq, ilike } from "drizzle-orm";
 import { z } from "zod";
+import { createAuthor, createBook, deleteBook, fetchAuthors, fetchBooks } from "./bookApi";
 
 const server = new FastMCP({
   name: "buchverwaltungs-mcp",
   version: "1.0.0",
 });
 
-server.tool({ name: "get_books", description: "Holt eine Liste aller Bücher" }, async () => {
-  const result = await db
-    .select({
-      id: books.id,
-      title: books.title,
-      isbn: books.isbn,
-      year: books.year,
-      author: authors.name,
-    })
-    .from(books)
-    .leftJoin(authors, eq(books.authorId, authors.id));
-  return JSON.stringify(result, null, 2);
+server.tool({ name: "get_books", description: "Holt die Bücherliste, maximal 200" }, async () => {
+  const result = await fetchBooks({ size: 200 });
+  return JSON.stringify(result.data, null, 2);
 });
 
 server.tool(
@@ -31,18 +21,8 @@ server.tool(
     }),
   },
   async (args) => {
-    const result = await db
-      .select({
-        id: books.id,
-        title: books.title,
-        isbn: books.isbn,
-        year: books.year,
-        author: authors.name,
-      })
-      .from(books)
-      .leftJoin(authors, eq(books.authorId, authors.id))
-      .where(ilike(books.title, `%${args.suchbegriff}%`));
-    return JSON.stringify(result, null, 2);
+    const result = await fetchBooks({ q: args.suchbegriff, size: 200 });
+    return JSON.stringify(result.data, null, 2);
   },
 );
 
@@ -52,7 +32,7 @@ server.tool(
     description: "Holt eine Liste aller Autoren",
   },
   async () => {
-    const result = await db.select().from(authors);
+    const result = await fetchAuthors();
     return JSON.stringify(result, null, 2);
   },
 );
@@ -69,24 +49,14 @@ server.tool(
       year: z.number().optional(),
     }),
   },
-  // Läuft hier mit Transaktion, da hier mehrere Operation ablaufen
   async ({ title, authorName, isbn, year }) => {
-    const newBook = await db.transaction(async (tx) => {
-      const author = await findOrCreateAuthor(tx, authorName);
-
-      const [created] = await tx
-        .insert(books)
-        .values({
-          title,
-          authorId: author.id,
-          isbn: isbn?.trim() || null,
-          year,
-        })
-        .returning();
-
-      return created;
+    const author = await createAuthor(authorName);
+    const newBook = await createBook({
+      title,
+      authorId: author.id,
+      isbn: isbn?.trim() || null,
+      year: year ?? null,
     });
-
     return JSON.stringify(newBook, null, 2);
   },
 );
@@ -100,7 +70,7 @@ server.tool(
     }),
   },
   async ({ id }) => {
-    const [deleted] = await db.delete(books).where(eq(books.id, id)).returning();
+    const deleted = await deleteBook(id);
 
     if (!deleted) {
       return JSON.stringify(
@@ -110,23 +80,8 @@ server.tool(
       );
     }
 
-    return JSON.stringify({ deleted: true, book: deleted }, null, 2);
+    return JSON.stringify({ deleted: true });
   },
 );
-
-// server.tool({
-//   name: "update_book",
-//   description: "Ändert ein bereits bestehendes Buch",
-//   input: z.object({
-//       title: z.string().min(1).optional,
-//       authorName: z.string().min(1).optional(),
-//       isbn: z.string().optional(),
-//       year: z.number().optional(),
-//   })
-// },
-// async ({title, authorName, isbn, year}) => {
-
-// }
-// )
 
 server.run().catch(console.error);

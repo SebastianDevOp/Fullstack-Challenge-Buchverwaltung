@@ -5,7 +5,7 @@
   "scripts": {
     "db:start": "docker compose up -d",
     "db:stop": "docker compose down",
-    "setup": "test -f packages/database/.env || cp packages/database/.env.example packages/database/.env && test -f packages/web/.env || cp packages/web/.env.example packages/web/.env && pnpm install && pnpm run db:start && pnpm --filter @book-manager/database migrate && pnpm --filter @book-manager/database seed",
+    "setup": "test -f packages/database/.env || cp packages/database/.env.example packages/database/.env && test -f packages/web/.env || cp packages/web/.env.example packages/web/.env && test -f packages/mcp/.env || cp packages/mcp/.env.example packages/mcp/.env && pnpm install && pnpm run db:start && pnpm --filter @book-manager/database migrate && pnpm --filter @book-manager/database seed",
     "dev": "pnpm --filter @book-manager/web dev",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
