@@ -2,9 +2,15 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
-import { createBookAction, deleteBookAction, updateBookAction } from "@/app/books/action";
+import {
+  createAuthorAction,
+  createBookAction,
+  deleteBookAction,
+  updateBookAction,
+} from "@/app/books/action";
 import type { BookFormValues } from "@/components/BookForm";
 import type { ApiBook } from "@/lib/booksApi";
+import type { OpenLibraryBook } from "./useOpenLibrarySearch";
 
 /**
  * Controller-Hook für die Bücher-Übersichtsseite.
@@ -101,6 +107,30 @@ export function useBooksController(q: string, totalCount: number, pageSize: numb
       }
     }
   };
+  // --- HANDLER FÜR BUCHVORSCHLÄGE ---
+  const handleSuggestionAdd = async (book: OpenLibraryBook, onAdded: (key: string) => void) => {
+    if (!book.authorName) return;
+
+    try {
+      const author = await createAuthorAction(book.authorName);
+      const result = await createBookAction({
+        title: book.title,
+        authorId: author.id,
+        isbn: book.isbn ?? null,
+        year: book.year ?? null,
+      });
+      if (result?.error === "duplicate-isbn") {
+        toast.error("Ein Buch mit dieser ISBN existiert bereits.");
+        return;
+      }
+      onAdded(book.key);
+      toast.success("Buch erfolgreich erstellt");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error("Das Buch konnte nicht hinzugefügt werden.");
+      }
+    }
+  };
 
   // --- HANDLER FÜR FORMULAR-SICHTBARKEIT ---
   const openCreateForm = () => {
@@ -126,6 +156,7 @@ export function useBooksController(q: string, totalCount: number, pageSize: numb
     handleFormSubmit,
     handlePageChange,
     handleSearch,
+    handleSuggestionAdd,
     inputValue,
     openCreateForm,
     openEditForm,

@@ -19,13 +19,20 @@ const normalizeTitle = (value: string) => value.trim().toLowerCase();
 export function useBookSuggestions(authors: ApiAuthor[], ownedTitles: string[]) {
   const [suggestions, setSuggestions] = useState<OpenLibraryBook[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [seed] = useState(() => Math.random());
+
+  const start = authors.length > 0 ? Math.floor(seed * authors.length) : 0;
+  const authorKey = Array.from(
+    { length: Math.min(3, authors.length) },
+    (_, index) => authors[(start + index) % authors.length].name,
+  ).join("|");
+  const ownedKey = ownedTitles.map(normalizeTitle).join("|");
 
   useEffect(() => {
     const load = async () => {
       try {
-        const slicedAuthors = authors.slice(0, 3);
-        const fetchPromise = slicedAuthors.map((author) => {
-          const encodedName = encodeURIComponent(author.name);
+        const fetchPromise = authorKey.split("|").map((authorName) => {
+          const encodedName = encodeURIComponent(authorName);
           const url = `https://openlibrary.org/search.json?author=${encodedName}&limit=10&fields=key,title,author_name,first_publish_year,isbn,cover_i`;
 
           return fetch(url).then((res) => {
@@ -37,7 +44,7 @@ export function useBookSuggestions(authors: ApiAuthor[], ownedTitles: string[]) 
 
         const formattedResults: OpenLibraryBook[] = [];
         const seen = new Set<string>();
-        const ownedSet = new Set<string>(ownedTitles.map(normalizeTitle));
+        const ownedSet = new Set<string>(ownedKey.split("|"));
 
         for (const response of result) {
           for (const doc of response.docs) {
@@ -74,7 +81,7 @@ export function useBookSuggestions(authors: ApiAuthor[], ownedTitles: string[]) 
       }
     };
     load();
-  }, []);
+  }, [authorKey, ownedKey]);
 
   function removeSuggestion(key: string) {
     setSuggestions((prev) => prev.filter((suggestion) => suggestion.key !== key));

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { BookForm } from "@/components/BookForm";
+import { BookCarousel } from "@/components/ui/BookCarousel";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PaginationBar } from "@/components/ui/PaginationBar";
@@ -40,12 +41,13 @@ export function BooksClientView({
     handleFormSubmit,
     handlePageChange,
     handleSearch,
+    handleSuggestionAdd,
     inputValue,
     openCreateForm,
     openEditForm,
     totalPages,
   } = useBooksController(q, totalCount, pageSize);
-  const { suggestions, isLoading } = useBookSuggestions(authors, ownedTitles);
+  const { suggestions, isLoading, removeSuggestion } = useBookSuggestions(authors, ownedTitles);
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -76,10 +78,12 @@ export function BooksClientView({
         </Button>
       </div>
       <div className=""></div>
-      <div
-        className="
-    "
-      ></div>
+      <div></div>
+      <BookCarousel
+        suggestions={suggestions}
+        isLoading={isLoading}
+        onAddClick={(book) => handleSuggestionAdd(book, removeSuggestion)}
+      />
       <div className="mt-6">
         <Table
           books={initialBooks}
