@@ -37,15 +37,17 @@ export const BookCarousel = ({ suggestions, isLoading, onAddClick }: BookCarouse
                 className="mb-3 h-48 w-full rounded object-cover"
               />
 
-              <h3 className="line-clamp-2 text-sm font-medium text-gray-900" title={book.title}>
-                {book.title}
-              </h3>
+              <div className="h-10 overflow-hidden">
+                <h3 className="line-clamp-2 text-sm font-medium text-gray-900" title={book.title}>
+                  {book.title}
+                </h3>
+              </div>
               <p className="mt-1 line-clamp-1 text-xs text-gray-500">
                 {book.authorName ?? "Unbekannter Autor"}
               </p>
               <p className="text-xs text-gray-400">{book.year ?? "—"}</p>
 
-              <div className="mt-3">
+              <div className="mt-auto flex justify-center pt-3">
                 <Button variant="primary" type="button" onClick={() => onAddClick(book)}>
                   Hinzufügen
                 </Button>

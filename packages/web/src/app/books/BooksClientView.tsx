@@ -84,13 +84,22 @@ export function BooksClientView({
         onAddClick={(book) => handleSuggestionAdd(book, removeSuggestion)}
       />
 
-      <Table
-        books={initialBooks}
-        headers={TABLE_HEADERS}
-        searchTerm={q}
-        onDeleteClick={handleDeleteClick}
-        onUpdateClick={openEditForm}
-      />
+      <section className="mt-10">
+        <h2 className="mb-1 text-lg font-semibold text-gray-900">Meine Bücher</h2>
+        <p className="mb-4 text-sm text-gray-500">
+          {totalCount === 1
+            ? "1 Buch in deiner Sammlung"
+            : `${totalCount} Bücher in deiner Sammlung`}
+        </p>
+
+        <Table
+          books={initialBooks}
+          headers={TABLE_HEADERS}
+          searchTerm={q}
+          onDeleteClick={handleDeleteClick}
+          onUpdateClick={openEditForm}
+        />
+      </section>
 
       <PaginationBar
         handlePageChange={handlePageChange}

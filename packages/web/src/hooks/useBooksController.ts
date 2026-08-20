@@ -124,7 +124,7 @@ export function useBooksController(q: string, totalCount: number, pageSize: numb
         return;
       }
       onAdded(book.key);
-      toast.success("Buch erfolgreich erstellt");
+      toast.success("Buch erfolgreich hinzugefügt!");
     } catch (error) {
       if (error instanceof Error) {
         toast.error("Das Buch konnte nicht hinzugefügt werden.");
