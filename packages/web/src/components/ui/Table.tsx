@@ -7,11 +7,18 @@ import { EditIcon } from "./EditIcon";
 type BooksTableProps = {
   books: ApiBook[];
   headers: string[];
+  searchTerm: string;
   onDeleteClick: (book: ApiBook) => void;
   onUpdateClick: (book: ApiBook) => void;
 };
 
-export const Table = ({ books, headers, onDeleteClick, onUpdateClick }: BooksTableProps) => {
+export const Table = ({
+  books,
+  headers,
+  searchTerm,
+  onDeleteClick,
+  onUpdateClick,
+}: BooksTableProps) => {
   return (
     <div className="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
       <div className="overflow-x-auto">
@@ -71,7 +78,9 @@ export const Table = ({ books, headers, onDeleteClick, onUpdateClick }: BooksTab
                   colSpan={headers.length + 1}
                   className="p-12 text-center text-sm text-gray-400 italic"
                 >
-                  Keine Bücher in der Datenbank vorhanden.
+                  {searchTerm
+                    ? `Keine Bücher gefunden für „${searchTerm}“.`
+                    : "Keine Bücher in der Datenbank vorhanden."}
                 </td>
               </tr>
             )}

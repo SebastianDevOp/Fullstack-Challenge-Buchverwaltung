@@ -68,38 +68,36 @@ export function BooksClientView({
         <div className="flex-1">
           <Input
             value={inputValue}
-            label={"Suche Titel oder Autor"}
-            name={"Suche"}
+            label="Suche Titel oder Autor"
+            name="Suche"
             onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
         <Button variant="primary" type="button" onClick={openCreateForm}>
-          {"Buch hinzufügen"}
+          Buch hinzufügen
         </Button>
       </div>
-      <div className=""></div>
-      <div></div>
+
       <BookCarousel
         suggestions={suggestions}
         isLoading={isLoading}
         onAddClick={(book) => handleSuggestionAdd(book, removeSuggestion)}
       />
-      <div className="mt-6">
-        <Table
-          books={initialBooks}
-          headers={TABLE_HEADERS}
-          onDeleteClick={handleDeleteClick}
-          onUpdateClick={(book) => openEditForm(book)}
-        />
-      </div>
-      <div className="mt-6">
-        <PaginationBar
-          handlePageChange={handlePageChange}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalCount={totalCount}
-        />
-      </div>
+
+      <Table
+        books={initialBooks}
+        headers={TABLE_HEADERS}
+        searchTerm={q}
+        onDeleteClick={handleDeleteClick}
+        onUpdateClick={openEditForm}
+      />
+
+      <PaginationBar
+        handlePageChange={handlePageChange}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalCount={totalCount}
+      />
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: Escape schließt den Dialog nativ */}
       <dialog
         ref={dialogRef}

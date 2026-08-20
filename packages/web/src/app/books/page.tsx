@@ -7,13 +7,11 @@ export default async function BooksPage({
 }: {
   searchParams: Promise<{ q?: string; page?: string }>;
 }) {
-  const resolvedSearchParams = await searchParams;
-  const parsedSearchParams = paramsSchema.parse(resolvedSearchParams);
-  const q = parsedSearchParams.q;
-  const page = Math.max(parsedSearchParams.page, 1);
+  const { q, page } = paramsSchema.parse(await searchParams);
   const pageSize = 20;
 
-  const [paginatedBooksData, allAuthors, allBooks] = await Promise.all([
+  // Die zweite Bücherabfrage liefert die Titel, gegen die das Karussell filtert.
+  const [paginatedBooksData, allAuthors, allBooksForFilter] = await Promise.all([
     fetchBooks({ q, page, size: pageSize }),
     fetchAuthors(),
     fetchBooks({ size: 200 }),
@@ -27,7 +25,7 @@ export default async function BooksPage({
       currentPage={page}
       q={q}
       pageSize={pageSize}
-      ownedTitles={allBooks.data.map((book) => book.title)}
+      ownedTitles={allBooksForFilter.data.map((book) => book.title)}
     />
   );
 }

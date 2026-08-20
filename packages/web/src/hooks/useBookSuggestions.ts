@@ -29,6 +29,8 @@ export function useBookSuggestions(authors: ApiAuthor[], ownedTitles: string[]) 
   const ownedKey = ownedTitles.map(normalizeTitle).join("|");
 
   useEffect(() => {
+    let cancelled = false;
+
     const load = async () => {
       try {
         const fetchPromise = authorKey.split("|").map((authorName) => {
@@ -36,7 +38,9 @@ export function useBookSuggestions(authors: ApiAuthor[], ownedTitles: string[]) 
           const url = `https://openlibrary.org/search.json?author=${encodedName}&limit=10&fields=key,title,author_name,first_publish_year,isbn,cover_i`;
 
           return fetch(url).then((res) => {
-            if (!res.ok) throw new Error();
+            if (!res.ok) {
+              throw new Error(`Suche nach "${authorName}" fehlgeschlagen (HTTP ${res.status})`);
+            }
             return res.json();
           });
         });
@@ -60,27 +64,30 @@ export function useBookSuggestions(authors: ApiAuthor[], ownedTitles: string[]) 
               authorName: doc.author_name?.[0],
               year: doc.first_publish_year,
               isbn: doc.isbn?.[0],
-              coverUrl: doc.cover_i
-                ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
-                : undefined,
+              coverUrl: `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`,
             };
             formattedResults.push(book);
           }
         }
         const slicedFormattedResult = formattedResults.slice(0, 12);
 
-        setSuggestions(slicedFormattedResult);
+        if (!cancelled) setSuggestions(slicedFormattedResult);
       } catch (err) {
         if (err instanceof Error) {
           console.error(err.message);
         } else {
           console.error("Ein unbekannter Fehler ist aufgetreten");
         }
+        if (!cancelled) setSuggestions([]);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
     load();
+
+    return () => {
+      cancelled = true;
+    };
   }, [authorKey, ownedKey]);
 
   function removeSuggestion(key: string) {
