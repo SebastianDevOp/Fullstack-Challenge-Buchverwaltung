@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PaginationBar } from "@/components/ui/PaginationBar";
 import { Table } from "@/components/ui/Table";
+import { useBookSuggestions } from "@/hooks/useBookSuggestions";
 import { useBooksController } from "@/hooks/useBooksController";
 import type { ApiAuthor, ApiBook } from "@/lib/booksApi";
 
@@ -19,6 +20,7 @@ type BooksClientViewProps = {
   currentPage: number;
   q: string;
   pageSize: number;
+  ownedTitles: string[];
 };
 
 export function BooksClientView({
@@ -28,6 +30,7 @@ export function BooksClientView({
   currentPage,
   q,
   pageSize,
+  ownedTitles,
 }: BooksClientViewProps) {
   const {
     closeForm,
@@ -42,6 +45,7 @@ export function BooksClientView({
     openEditForm,
     totalPages,
   } = useBooksController(q, totalCount, pageSize);
+  const { suggestions, isLoading } = useBookSuggestions(authors, ownedTitles);
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 

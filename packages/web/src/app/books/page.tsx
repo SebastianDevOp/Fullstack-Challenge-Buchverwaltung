@@ -13,9 +13,11 @@ export default async function BooksPage({
   const page = Math.max(parsedSearchParams.page, 1);
   const pageSize = 20;
 
-  const paginatedBooksData = await fetchBooks({ q: q, page: page, size: pageSize });
-
-  const allAuthors = await fetchAuthors();
+  const [paginatedBooksData, allAuthors, allBooks] = await Promise.all([
+    fetchBooks({ q, page, size: pageSize }),
+    fetchAuthors(),
+    fetchBooks({ size: 200 }),
+  ]);
 
   return (
     <BooksClientView
@@ -25,6 +27,7 @@ export default async function BooksPage({
       currentPage={page}
       q={q}
       pageSize={pageSize}
+      ownedTitles={allBooks.data.map((book) => book.title)}
     />
   );
 }
