@@ -167,6 +167,22 @@ class BookControllerTest {
 
         mockMvc.get("/api/books").andExpect { status { isOk() } }
     }
+
+    @Test
+    fun `Titel-Endpunkt liefert nur die Titel als String-Liste`() {
+
+        given(bookRepository.findAllTitles()).willReturn(listOf("Testbuch", "Zweitbuch"))
+
+        mockMvc.get("/api/books/titles").andExpect {
+            status { isOk() }
+            jsonPath("$.length()") { value(2) }
+            jsonPath("$[0]") { value("Testbuch") }
+            jsonPath("$[1]") { value("Zweitbuch") }
+        }
+
+        // Der Pfad darf nicht auf /api/books/{id} laufen - sonst waere es ein 400.
+        verify(bookRepository).findAllTitles()
+    }
 }
 
 // GET /api/books/1, Buch existiert	200

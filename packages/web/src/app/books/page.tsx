@@ -1,4 +1,4 @@
-import { fetchAuthors, fetchBooks } from "@/lib/booksApi";
+import { fetchAuthors, fetchBooks, fetchBookTitles } from "@/lib/booksApi";
 import { BooksClientView } from "./BooksClientView";
 import { paramsSchema } from "./paramsSchema";
 
@@ -10,11 +10,10 @@ export default async function BooksPage({
   const { q, page } = paramsSchema.parse(await searchParams);
   const pageSize = 20;
 
-  // Die zweite Bücherabfrage liefert die Titel, gegen die das Karussell filtert.
-  const [paginatedBooksData, allAuthors, allBooksForFilter] = await Promise.all([
+  const [paginatedBooksData, allAuthors, ownedTitles] = await Promise.all([
     fetchBooks({ q, page, size: pageSize }),
     fetchAuthors(),
-    fetchBooks({ size: 200 }),
+    fetchBookTitles(),
   ]);
 
   return (
@@ -25,7 +24,7 @@ export default async function BooksPage({
       currentPage={page}
       q={q}
       pageSize={pageSize}
-      ownedTitles={allBooksForFilter.data.map((book) => book.title)}
+      ownedTitles={ownedTitles}
     />
   );
 }

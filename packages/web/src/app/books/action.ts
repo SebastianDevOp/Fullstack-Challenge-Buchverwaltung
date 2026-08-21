@@ -1,14 +1,23 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { z } from "zod";
-import { ApiError, createAuthor, createBook, deleteBook, updateBook } from "@/lib/booksApi";
+import {
+  ApiError,
+  AUTHORS_TAG,
+  BOOKS_TAG,
+  createAuthor,
+  createBook,
+  deleteBook,
+  updateBook,
+} from "@/lib/booksApi";
 import { bookSchema } from "./bookSchema";
 
 const authorNameSchema = z.string().trim().min(1);
 
 export async function createAuthorAction(name: unknown) {
   const author = await createAuthor(authorNameSchema.parse(name));
+  updateTag(AUTHORS_TAG);
   revalidatePath("/books");
 
   return author;
@@ -25,6 +34,7 @@ export async function createBookAction(input: unknown) {
     throw error;
   }
 
+  updateTag(BOOKS_TAG);
   revalidatePath("/books");
 }
 
@@ -42,10 +52,12 @@ export async function updateBookAction(input: unknown) {
     throw error;
   }
 
+  updateTag(BOOKS_TAG);
   revalidatePath("/books");
 }
 
 export async function deleteBookAction(bookID: number) {
   await deleteBook(bookID);
+  updateTag(BOOKS_TAG);
   revalidatePath("/books");
 }

@@ -60,6 +60,10 @@ async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
 
 const jsonHeaders = { "Content-Type": "application/json" };
 
+// Cache-Tags fuer die Lesepfade. Invalidiert werden sie in app/books/action.ts.
+export const BOOKS_TAG = "books";
+export const AUTHORS_TAG = "authors";
+
 export async function fetchBooks({
   q,
   page,
@@ -87,8 +91,26 @@ export async function fetchBooks({
 }
 
 export async function fetchAuthors(): Promise<ApiAuthor[]> {
-  const response = await apiFetch("/api/authors");
+  const response = await apiFetch("/api/authors", {
+    cache: "force-cache",
+    next: { tags: [AUTHORS_TAG] },
+  });
   const result: ApiAuthor[] = await response.json();
+  return result;
+}
+
+/**
+ * Liefert nur die Titel aller Bücher – Grundlage für den Abgleich im Karussell.
+ * Bewusst kein `fetchBooks`, damit weder vollständige Buch-Objekte noch der
+ * Autoren-Join über die Leitung gehen.
+ */
+export async function fetchBookTitles(): Promise<string[]> {
+  const response = await apiFetch("/api/books/titles", {
+    cache: "force-cache",
+    next: { tags: [BOOKS_TAG] },
+  });
+  const result: string[] = await response.json();
+
   return result;
 }
 

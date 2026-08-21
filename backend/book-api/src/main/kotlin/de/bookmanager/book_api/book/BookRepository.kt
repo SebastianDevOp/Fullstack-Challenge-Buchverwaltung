@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -19,4 +20,7 @@ interface BookRepository : JpaRepository<Book, Int> {
     ): Page<Book>
 
     @EntityGraph(attributePaths = ["author"]) fun findBookById(id: Int): Book?
+
+    /** Projektion nur auf den Titel - laedt weder Buch- noch Autor-Entities. */
+    @Query("select b.title from Book b") fun findAllTitles(): List<String>
 }

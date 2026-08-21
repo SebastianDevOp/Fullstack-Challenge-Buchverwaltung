@@ -77,4 +77,16 @@ describe("paramsSchema", () => {
     expect(result.q).toBe("Harry");
     expect(result.page).toBe(2);
   });
+
+  it("nimmt bei mehrfachem q einen leeren Text", () => {
+    const result = paramsSchema.parse({ q: ["a", "b"] });
+
+    expect(result.q).toBe("");
+  });
+
+  it("nimmt bei einer Zahl als q einen leeren Text", () => {
+    const result = paramsSchema.parse({ q: 5 });
+
+    expect(result.q).toBe("");
+  });
 });

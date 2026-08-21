@@ -57,6 +57,9 @@ class BookController(val bookRepository: BookRepository, val authorRepository: A
                 return response
         }
 
+        @GetMapping("/titles")
+        fun getBookTitles(): List<String> = bookRepository.findAllTitles()
+
         @GetMapping("/{id}")
         fun getBook(@PathVariable("id") id: Int): BookDto {
                 val book = bookRepository.findBookById(id)

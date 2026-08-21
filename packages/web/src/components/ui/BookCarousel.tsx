@@ -29,7 +29,7 @@ export const BookCarousel = ({ suggestions, isLoading, onAddClick }: BookCarouse
               key={book.key}
               className="flex w-40 shrink-0 snap-start flex-col rounded-xl border border-gray-200 bg-white p-3 shadow-sm"
             >
-              {/* biome-ignore lint/performance/noImgElement: Cover kommen von OpenLibrary, next/image lohnt hier nicht */}
+              {/* biome-ignore lint/performance/noImgElement: Cover kommen von OpenLibrary*/}
               <img
                 src={book.coverUrl}
                 alt={`Cover von ${book.title}`}
