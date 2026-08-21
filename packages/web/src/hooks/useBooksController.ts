@@ -69,25 +69,23 @@ export function useBooksController(q: string, totalCount: number, pageSize: numb
 
   // --- HANDLER FÜR SERVER ACTIONS  ---
   const handleFormSubmit = async (formData: BookFormValues) => {
+    let result: { error: string } | undefined;
+
     try {
-      const result = editingBook
-        ? await updateBookAction(formData)
-        : await createBookAction(formData);
-
-      if (result?.error === "duplicate-isbn") {
-        toast.error("Ein Buch mit dieser ISBN existiert bereits.");
-        return;
-      }
-
-      toast.success(editingBook ? "Buch erfolgreich aktualisiert!" : "Buch erfolgreich erstellt!");
-      setFormVisibility(false);
-      setEditingBook(null);
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error("Ein Fehler ist aufgetreten.");
-      }
-      throw error;
+      result = editingBook ? await updateBookAction(formData) : await createBookAction(formData);
+    } catch {
+      toast.error("Ein Fehler ist aufgetreten.");
+      throw new Error("submit-failed");
     }
+
+    if (result?.error === "duplicate-isbn") {
+      toast.error("Ein Buch mit dieser ISBN existiert bereits.");
+      throw new Error("duplicate-isbn");
+    }
+
+    toast.success(editingBook ? "Buch erfolgreich aktualisiert!" : "Buch erfolgreich erstellt!");
+    setFormVisibility(false);
+    setEditingBook(null);
   };
 
   const handleDeleteClick = async (book: ApiBook) => {
