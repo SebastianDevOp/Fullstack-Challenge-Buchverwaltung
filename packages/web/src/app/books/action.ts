@@ -56,8 +56,10 @@ export async function updateBookAction(input: unknown) {
   revalidatePath("/books");
 }
 
-export async function deleteBookAction(bookID: number) {
-  await deleteBook(bookID);
+export async function deleteBookAction(input: unknown) {
+  const id = z.coerce.number().int().positive().parse(input);
+
+  await deleteBook(id);
   updateTag(BOOKS_TAG);
   revalidatePath("/books");
 }
