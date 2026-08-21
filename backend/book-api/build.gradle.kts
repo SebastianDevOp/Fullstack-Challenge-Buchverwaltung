@@ -31,6 +31,9 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+	testImplementation("org.springframework.boot:spring-boot-testcontainers")
+	testImplementation("org.testcontainers:testcontainers-postgresql")
+	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -46,6 +49,26 @@ allOpen {
 	annotation("jakarta.persistence.Embeddable")
 }
 
+// Die echten Drizzle-Migrationen als Init-Skript fuer Testcontainers buendeln,
+// damit der Test gegen dasselbe Schema laeuft wie der Betrieb.
+val migrationDir = file("../../packages/database/drizzle")
+
+val bundleMigrations by tasks.registering {
+	val target = layout.buildDirectory.file("resources/test/schema.sql")
+	inputs.dir(migrationDir)
+	outputs.file(target)
+	doLast {
+		val sql = migrationDir.listFiles { f -> f.extension == "sql" }
+				?.sortedBy { it.name }
+				?.joinToString("\n") { it.readText() }
+				?: error("Keine Migrationen in $migrationDir gefunden")
+		val out = target.get().asFile
+		out.parentFile.mkdirs()
+		out.writeText(sql)
+	}
+}
+
 tasks.withType<Test> {
 	useJUnitPlatform()
+	dependsOn(bundleMigrations)
 }
