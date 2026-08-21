@@ -11,7 +11,11 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException::class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    fun handleDataIntegrityViolation(): Map<String, String> {
+    fun handleDataIntegrityViolation(ex: DataIntegrityViolationException): Map<String, String> {
+        if (ex.mostSpecificCause.message?.contains("books_isbn_unique") != true) {
+            throw ex
+        }
+
         return mapOf("message" to "Ein Buch mit dieser ISBN existiert bereits.")
     }
 }

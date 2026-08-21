@@ -2,7 +2,9 @@ package de.bookmanager.book_api.book
 
 import de.bookmanager.book_api.author.Author
 import de.bookmanager.book_api.author.AuthorRepository
+import jakarta.servlet.ServletException
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.BDDMockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
@@ -119,7 +121,7 @@ class BookControllerTest {
         given(bookRepository.save(any()))
                 .willThrow(
                         DataIntegrityViolationException(
-                                "duplicate key value violates unique constraint"
+                                "duplicate key value violates unique constraint \"books_isbn_unique\""
                         )
                 )
 
@@ -136,6 +138,34 @@ class BookControllerTest {
         """.trimIndent()
                 }
                 .andExpect { status { isConflict() } }
+    }
+
+    @Test
+    fun `Andere Integritaetsverletzung wird nicht als 409 behandelt`() {
+
+        val author = Author(id = 1, name = "Testauthor")
+        given(authorRepository.findAuthorById(1)).willReturn(author)
+
+        given(bookRepository.save(any()))
+                .willThrow(
+                        DataIntegrityViolationException(
+                                "null value in column \"title\" violates not-null constraint"
+                        )
+                )
+
+        assertThrows<ServletException> {
+            mockMvc.post("/api/books") {
+                contentType = MediaType.APPLICATION_JSON
+                content =
+                        """
+            {
+                "title": "Testbuch",
+                "authorId": 1,
+                "isbn": "9783442155286"
+            }
+        """.trimIndent()
+            }
+        }
     }
 
     @Test
