@@ -82,6 +82,8 @@ export const BookForm = ({
           name="authorId"
           value={formData?.authorId}
           onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.authorId ? (errors.authorId ?? "") : ""}
           required={true}
           options={localAuthors.map((author) => ({
             value: author.id,
@@ -93,6 +95,8 @@ export const BookForm = ({
           name="isbn"
           value={formData.isbn ?? ""}
           onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.isbn ? (errors.isbn ?? "") : ""}
           required={false}
         />
         <Input
@@ -101,6 +105,8 @@ export const BookForm = ({
           type="number"
           value={formData.year ?? ""}
           onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.year ? (errors.year ?? "") : ""}
           required={false}
         />
 

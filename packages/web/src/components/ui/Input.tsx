@@ -39,7 +39,7 @@ export const Input = ({
           peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-2.5 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:scale-90"
           htmlFor={name}
         >{`${label}`}</label>
-        {error && <p className="text-red-500 text-xs mt-1 ml-1">{error}</p>}
+        {error !== undefined && <p className="min-h-4 text-red-500 text-xs mt-1 ml-1">{error}</p>}
       </div>
     </div>
   );

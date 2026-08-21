@@ -38,7 +38,7 @@ export const BookTitleAutocomplete = ({
             setShowDropdown(true);
           }}
           required={true}
-          error={touched.title ? errors.title : ""}
+          error={touched.title ? (errors.title ?? "") : ""}
           onBlur={(e) => {
             handleBlur(e);
             setTimeout(() => setShowDropdown(false), 200);

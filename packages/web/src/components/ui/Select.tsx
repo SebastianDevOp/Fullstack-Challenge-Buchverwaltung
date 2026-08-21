@@ -2,10 +2,12 @@ import type { ComponentPropsWithoutRef } from "react";
 
 type SelectProps = ComponentPropsWithoutRef<"select"> & {
   label: string;
+  error?: string;
   options: { value: string | number; label: string }[];
 };
 
 export const Select = ({
+  error,
   label,
   name,
   value,
@@ -35,6 +37,7 @@ export const Select = ({
           </option>
         ))}
       </select>
+      {error !== undefined && <p className="min-h-4 text-red-500 text-xs mt-1 ml-1">{error}</p>}
     </div>
   );
 };
