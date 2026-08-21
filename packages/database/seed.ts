@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { db, pool } from "./src/db.js";
 import { authors, books } from "./src/schema.js";
 
@@ -58,6 +59,7 @@ async function main() {
         set: { name: author.name },
       });
   }
+  await db.execute(sql`SELECT setval('authors_id_seq', (SELECT MAX(id) FROM authors))`);
 
   console.log(`Seeded ${authorData.length} authors.`);
 
