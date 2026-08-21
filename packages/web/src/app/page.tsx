@@ -32,9 +32,6 @@ export default function HomePage() {
           <Link href="/books">Bücher-Seite</Link> — Hier kommt deine Implementierung hin
         </li>
         <li>
-          <Link href="/api-doc">API Dokumentation</Link> — Alle Endpunkte mit Beispielen
-        </li>
-        <li>
           <a href="https://github.com/innFactory/book-manager" target="_blank" rel="noreferrer">
             README
           </a>{" "}
@@ -44,10 +41,10 @@ export default function HomePage() {
 
       <h2>Aktueller Stand</h2>
       <p>
-        Die Bücher- und Autoren-Endpunkte liegen inzwischen im Spring-Boot-Service unter{" "}
+        Die Bücher- und Autoren-Endpunkte liegen im Spring-Boot-Service unter{" "}
         <code>backend/book-api</code>. Das Frontend spricht über Server Actions mit diesem Service
-        und greift nicht mehr selbst auf die Datenbank zu. Die ursprünglichen Routen unter{" "}
-        <code>packages/web/src/app/api/</code> sind als Referenz erhalten geblieben.
+        und greift nicht mehr selbst auf die Datenbank zu — es gibt genau einen Schreibweg. Die
+        ursprünglichen Next.js-Routen wurden entfernt; sie stehen in der Git-Historie.
       </p>
       <p>
         <code>pnpm dev</code> startet Datenbank, Service und Frontend gemeinsam. Der Service braucht
