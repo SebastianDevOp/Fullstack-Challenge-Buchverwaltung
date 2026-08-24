@@ -4,11 +4,13 @@ import de.bookmanager.book_api.author.Author
 import jakarta.validation.constraints.*
 
 data class CreateBookRequest(
-        @field:NotBlank(message = "Feld darf nicht leer sein") var title: String,
+        @field:NotBlank(message = "Feld darf nicht leer sein")
+        @field:Size(max = 500, message = "Darf höchstens 500 Zeichen haben")
+        var title: String,
         @field:NotNull(message = "Wert darf nicht leer sein")
         @field:Positive(message = "Wert muss größer 0 sein")
         val authorId: Int?,
-        var isbn: String? = null,
+        @field:Size(max = 20, message = "Darf höchstens 20 Zeichen haben") var isbn: String? = null,
         @field:Positive(message = "Wert muss größer 0 sein") val year: Int? = null,
 ) {
     init {

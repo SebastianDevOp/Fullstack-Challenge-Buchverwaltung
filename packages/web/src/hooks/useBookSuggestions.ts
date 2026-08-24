@@ -30,6 +30,11 @@ export function useBookSuggestions(authors: ApiAuthor[], ownedTitles: string[]) 
 
   useEffect(() => {
     let cancelled = false;
+    if (!authorKey) {
+      setSuggestions([]);
+      setIsLoading(false);
+      return;
+    }
 
     const load = async () => {
       try {

@@ -19,7 +19,7 @@ type OpenLibraryBookDoc = {
 };
 /**
  * Hook für die Live-Suche in der OpenLibrary API.
- * Holt Buchtitel, Autoren, Erscheinungsjahre, ISBNs und generiert Cover-URLs(Wird in Zukunft ergänzt).
+ * Holt Buchtitel, Autoren, Erscheinungsjahre, ISBNs und generiert Cover-URLs.
  * Nutzt einen Debounce, um nicht bei jedem Tastendruck die API zu überlasten.
  *
  * @param query - Der aktuelle Suchbegriff aus dem Eingabefeld.

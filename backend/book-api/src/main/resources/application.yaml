@@ -4,11 +4,13 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/challenge}
     username: ${DB_USERNAME:postgres}
+    # Vorgabewert nur fuer lokale Entwicklung - in jeder echten Umgebung per DB_PASSWORD ueberschreiben
     password: ${DB_PASSWORD:postgres}
   data:
     web:
       pageable:
         one-indexed-parameters: true
+        max-page-size: 100
   jpa:
     hibernate:
       ddl-auto: validate

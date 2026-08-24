@@ -16,6 +16,7 @@ export const BookCover = ({ isbn, className = "h-14 w-10", title }: BookCoverPro
     return <div className={`${className} bg-gray-100 rounded`} />;
   }
   return (
+    // ISBN-Variante ist staerker gedrosselt als /b/id/{cover_i} - siehe useOpenLibrarySearch.ts
     // biome-ignore lint/performance/noImgElement: Cover kommen von OpenLibrary, next/image lohnt bei 40px nicht
     <img
       src={`https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg?default=false`}
