@@ -38,11 +38,47 @@ describe("BookForm", () => {
     vi.unstubAllGlobals();
   });
 
-  it("übergibt die eingegebenen Werte an onSubmit", async () => {});
+  it("übergibt die eingegebenen Werte an onSubmit", async () => {
+    const { user, onSubmit, titleField, authorField, isbnField, submitButton } = setup();
 
-  it("sperrt den Absenden-Knopf, solange Pflichtfelder fehlen", async () => {});
+    await user.type(titleField, "Der Prozess");
+    await user.selectOptions(authorField, "7");
+    await user.type(isbnField, "9783150091319");
+    await user.click(submitButton);
 
-  it("zeigt beim Öffnen noch keine Fehlermeldung", () => {});
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Der Prozess",
+        authorId: "7",
+        isbn: "9783150091319",
+      }),
+    );
+  });
 
-  it("meldet einen fehlenden Autor, sobald das Feld verlassen wurde", async () => {});
+  it("sperrt den Absenden-Knopf, solange Pflichtfelder fehlen", async () => {
+    const { user, onSubmit, submitButton } = setup();
+
+    expect(submitButton).toBeDisabled();
+
+    await user.click(submitButton);
+
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it("zeigt beim Öffnen noch keine Fehlermeldung", () => {
+    setup();
+
+    expect(screen.queryByText("Autor bitte auswählen")).not.toBeInTheDocument();
+    expect(screen.queryByText("Titel notwendig")).not.toBeInTheDocument();
+  });
+
+  it("meldet einen fehlenden Autor, sobald das Feld verlassen wurde", async () => {
+    const { user, authorField } = setup();
+
+    await user.click(authorField);
+    await user.tab();
+
+    expect(screen.getByText("Autor bitte auswählen")).toBeInTheDocument();
+  });
 });

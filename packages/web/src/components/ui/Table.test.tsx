@@ -32,9 +32,23 @@ const setup = (books: ApiBook[], searchTerm = "") => {
 };
 
 describe("Table", () => {
-  it("zeigt Titel und Autor eines Buches an", () => {});
+  it("zeigt Titel und Autor eines Buches an", () => {
+    setup([kafka]);
 
-  it("meldet eine leere Sammlung, wenn nicht gesucht wurde", () => {});
+    expect(screen.getByText("Der Prozess")).toBeInTheDocument();
+    expect(screen.getByText("Franz Kafka")).toBeInTheDocument();
+  });
 
-  it("nennt den Suchbegriff, wenn die Suche nichts findet", () => {});
+  it("meldet eine leere Sammlung, wenn nicht gesucht wurde", () => {
+    setup([]);
+
+    expect(screen.getByText("Keine Bücher in der Datenbank vorhanden.")).toBeInTheDocument();
+  });
+
+  it("nennt den Suchbegriff, wenn die Suche nichts findet", () => {
+    setup([], "Kafka");
+
+    expect(screen.getByText("Keine Bücher gefunden für „Kafka“.")).toBeInTheDocument();
+    expect(screen.queryByText("Keine Bücher in der Datenbank vorhanden.")).not.toBeInTheDocument();
+  });
 });
