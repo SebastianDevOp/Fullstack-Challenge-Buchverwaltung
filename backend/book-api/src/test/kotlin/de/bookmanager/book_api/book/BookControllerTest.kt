@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 
 @WebMvcTest(BookController::class)
 class BookControllerTest {
@@ -210,8 +211,76 @@ class BookControllerTest {
             jsonPath("$[1]") { value("Zweitbuch") }
         }
 
-        // Der Pfad darf nicht auf /api/books/{id} laufen - sonst waere es ein 400.
         verify(bookRepository).findAllTitles()
+    }
+
+    @Test
+    fun `Vorhandenes Buch wird akualisiert und liefert 200`() {
+
+        val author = Author(id = 1, name = "Testauthor")
+        given(authorRepository.findAuthorById(1)).willReturn(author)
+
+        val book = Book(id = 27, title = "Testbuch", author = author)
+
+        given(bookRepository.findBookById(27)).willReturn(book)
+        mockMvc
+                .put("/api/books/27") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content =
+                            """
+            { "title" : "Testbuch2",
+             "authorId" : 1}
+            """.trimIndent()
+                }
+                .andExpect { status { isOk() } }
+    }
+
+    @Test
+    fun `Update eines unbekannten Buch liefert 404`() {
+        mockMvc
+                .put("/api/books/999") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content =
+                            """{
+                    "title" : "Testbuch","authorId": 1}""".trimIndent()
+                }
+                .andExpect { status { isNotFound() } }
+    }
+
+    @Test
+    fun `Update mit unbekannten Autor liefert 400`() {
+        val author = Author(id = 1, name = "Testauthor")
+        given(authorRepository.findAuthorById(1)).willReturn(author)
+
+        val book = Book(id = 27, title = "Testbuch", author = author)
+
+        given(bookRepository.findBookById(27)).willReturn(book)
+
+        mockMvc
+                .put("/api/books/27") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content =
+                            """
+            {"title" : "Testbuch" , "authorId" : 999}""".trimIndent()
+                }
+                .andExpect { status { isBadRequest() } }
+    }
+
+    @Test
+    fun `Update mit leeren Titel liefert 400`() {
+        val author = Author(id = 1, name = "Testauthor")
+        given(authorRepository.findAuthorById(1)).willReturn(author)
+
+        val book = Book(id = 27, title = "Testbuch", author = author)
+
+        given(bookRepository.findBookById(27)).willReturn(book)
+
+        mockMvc
+                .put("/api/books/27") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = """{"title" : "" , "authorId": 1}""".trimIndent()
+                }
+                .andExpect { status { isBadRequest() } }
     }
 }
 
