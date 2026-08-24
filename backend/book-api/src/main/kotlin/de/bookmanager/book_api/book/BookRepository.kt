@@ -14,11 +14,6 @@ interface BookRepository : JpaRepository<Book, Int> {
         @EntityGraph(attributePaths = ["author"])
         override fun findAll(pageable: Pageable): Page<Book>
 
-        /**
-         * Sucht in Titel und Autorennamen. Bewusst als UNION statt als OR ueber beide Tabellen: Ein
-         * OR ueber zwei Tabellen macht die Trigramm-Indizes unbenutzbar - bei 50k Zeilen gemessen
-         * 21 ms gegen 0,7 ms.
-         */
         @EntityGraph(attributePaths = ["author"])
         @Query(
                 """
