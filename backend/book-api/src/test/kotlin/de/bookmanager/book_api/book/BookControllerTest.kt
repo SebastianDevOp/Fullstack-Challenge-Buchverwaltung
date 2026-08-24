@@ -183,14 +183,7 @@ class BookControllerTest {
         val author = Author(id = 1, name = "J.R.R. Tolkien")
         val book = Book(id = 1, title = "The Lord of the Rings", author = author)
 
-        given(
-                        bookRepository
-                                .findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(
-                                        "Tolkien",
-                                        "Tolkien",
-                                        PageRequest.of(0, 20)
-                                )
-                )
+        given(bookRepository.searchByTitleOrAuthorName("%Tolkien%", PageRequest.of(0, 20)))
                 .willReturn(PageImpl(listOf(book)))
 
         mockMvc.get("/api/books?q=Tolkien").andExpect { status { isOk() } }
