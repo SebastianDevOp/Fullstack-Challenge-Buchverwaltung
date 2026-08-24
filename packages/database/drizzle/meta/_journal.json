@@ -29,6 +29,13 @@
       "when": 1787305662738,
       "tag": "0003_search_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1787570568516,
+      "tag": "0004_unique_author_name",
+      "breakpoints": true
     }
   ]
 }

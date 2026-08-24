@@ -1,6 +1,7 @@
 package de.bookmanager.book_api.author
 
 import jakarta.validation.Valid
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -25,7 +26,11 @@ class AuthorController(val authorRepository: AuthorRepository) {
 
         if (autor == null) {
 
-            return authorRepository.save(request.toAuthor())
+            return try {
+                authorRepository.save(request.toAuthor())
+            } catch (ex: DataIntegrityViolationException) {
+                authorRepository.findAuthorByNormalizedName(normalized) ?: throw ex
+            }
         }
 
         return autor

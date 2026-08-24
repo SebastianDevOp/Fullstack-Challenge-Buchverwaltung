@@ -1,9 +1,12 @@
 package de.bookmanager.book_api.author
 
+import jakarta.servlet.ServletException
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.BDDMockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
@@ -54,6 +57,50 @@ class AuthorControllerTest {
                 }
 
         verify(authorRepository).save(any())
+    }
+
+    @Test
+    fun `Wettlauf beim Anlegen wird aufgelöst`() {
+
+        val author = Author(id = 3, name = "Hermann Hesse")
+
+        given(authorRepository.findAuthorByNormalizedName("hermannhesse"))
+                .willReturn(null, author)
+
+        given(authorRepository.save(any()))
+                .willThrow(
+                        DataIntegrityViolationException(
+                                "duplicate key value violates unique constraint \"authors_normalized_name_unique\""
+                        )
+                )
+
+        mockMvc
+                .post("/api/authors") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = """{"name": "Hermann Hesse"}"""
+                }
+                .andExpect {
+                    status { isOk() }
+                    jsonPath("$.id") { value(3) }
+                }
+    }
+
+    @Test
+    fun `Andere Integritaetsverletzung wird nicht aufgeloest`() {
+
+        given(authorRepository.save(any()))
+                .willThrow(
+                        DataIntegrityViolationException(
+                                "null value in column \"name\" violates not-null constraint"
+                        )
+                )
+
+        assertThrows<ServletException> {
+            mockMvc.post("/api/authors") {
+                contentType = MediaType.APPLICATION_JSON
+                content = """{"name": "Hermann Hesse"}"""
+            }
+        }
     }
 
     @Test
