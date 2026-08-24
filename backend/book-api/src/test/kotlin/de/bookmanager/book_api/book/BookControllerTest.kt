@@ -30,12 +30,15 @@ class BookControllerTest {
 
     @Test
     fun `Buch existiert und liefert 200`() {
-
         val author = Author(id = 1, name = "Testauthor")
         val book = Book(id = 1, title = "Testbuch", author = author)
 
         given(bookRepository.findBookById(1)).willReturn(book)
-        mockMvc.get("/api/books/1").andExpect { status { isOk() } }
+        mockMvc.get("/api/books/1").andExpect {
+            status { isOk() }
+            jsonPath("$.author") { value(author.name) }
+            jsonPath("$.authorId") { value(1) }
+        }
     }
 
     @Test
@@ -68,7 +71,12 @@ class BookControllerTest {
             }
         """.trimIndent()
                 }
-                .andExpect { status { isCreated() } }
+                .andExpect {
+                    status { isCreated() }
+
+                    jsonPath("$.title") { value("Testbuch") }
+                    jsonPath("$.id") { value(27) }
+                }
     }
 
     @Test
@@ -196,7 +204,12 @@ class BookControllerTest {
 
         given(bookRepository.findAll(PageRequest.of(0, 20))).willReturn(PageImpl(listOf(book)))
 
-        mockMvc.get("/api/books").andExpect { status { isOk() } }
+        mockMvc.get("/api/books").andExpect {
+            status { isOk() }
+            jsonPath("$.page") { value(1) }
+            jsonPath("$.total") { value(1) }
+            jsonPath("$.data.length()") { value(1) }
+        }
     }
 
     @Test
@@ -228,11 +241,15 @@ class BookControllerTest {
                     contentType = MediaType.APPLICATION_JSON
                     content =
                             """
-            { "title" : "Testbuch2",
+            { "title" : "Testbuch 2",
              "authorId" : 1}
             """.trimIndent()
                 }
-                .andExpect { status { isOk() } }
+                .andExpect {
+                    status { isOk() }
+                    jsonPath("$.title") { value("Testbuch 2") }
+                    jsonPath("$.id") { value(27) }
+                }
     }
 
     @Test

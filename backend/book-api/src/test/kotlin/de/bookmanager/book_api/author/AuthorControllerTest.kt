@@ -28,7 +28,10 @@ class AuthorControllerTest {
                     contentType = MediaType.APPLICATION_JSON
                     content = """{"name": "Hermann Hesse"}"""
                 }
-                .andExpect { status { isOk() } }
+                .andExpect {
+                    status { isOk() }
+                    jsonPath("$.id") { value(1) }
+                }
 
         verify(authorRepository, never()).save(any())
     }
@@ -45,7 +48,10 @@ class AuthorControllerTest {
                     contentType = MediaType.APPLICATION_JSON
                     content = """{"name": "Hermann Hesse"}"""
                 }
-                .andExpect { status { isOk() } }
+                .andExpect {
+                    status { isOk() }
+                    jsonPath("$.id") { value(2) }
+                }
 
         verify(authorRepository).save(any())
     }
