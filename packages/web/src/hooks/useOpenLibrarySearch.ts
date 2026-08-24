@@ -33,6 +33,8 @@ export function useOpenLibrarySearch(query: string) {
       setResult([]);
       return;
     }
+    let cancelled = false;
+
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
@@ -53,16 +55,19 @@ export function useOpenLibrarySearch(query: string) {
             ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
             : undefined,
         }));
-        setResult(formattedResults);
+        if (!cancelled) setResult(formattedResults);
       } catch (error) {
         console.error("Fehler bei der OpenLibrary-Suche", error);
-        setResult([]);
+        if (!cancelled) setResult([]);
       } finally {
-        setIsSearching(false);
+        if (!cancelled) setIsSearching(false);
       }
     }, 500);
 
-    return () => clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [query]);
   return { isSearching, results };
 }
