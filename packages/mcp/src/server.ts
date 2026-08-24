@@ -1,6 +1,13 @@
 import { FastMCP } from "@prefecthq/fastmcp-ts/server";
 import { z } from "zod";
-import { createAuthor, createBook, deleteBook, fetchAuthors, fetchBooks } from "./bookApi";
+import {
+  ApiError,
+  createAuthor,
+  createBook,
+  deleteBook,
+  fetchAuthors,
+  fetchBooks,
+} from "./bookApi";
 
 const server = new FastMCP({
   name: "buchverwaltungs-mcp",
@@ -51,13 +58,26 @@ server.tool(
   },
   async ({ title, authorName, isbn, year }) => {
     const author = await createAuthor(authorName);
-    const newBook = await createBook({
-      title,
-      authorId: author.id,
-      isbn: isbn?.trim() || null,
-      year: year ?? null,
-    });
-    return JSON.stringify(newBook, null, 2);
+
+    try {
+      const newBook = await createBook({
+        title,
+        authorId: author.id,
+        isbn: isbn?.trim() || null,
+        year: year ?? null,
+      });
+      return JSON.stringify(newBook, null, 2);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 409) {
+        return JSON.stringify(
+          { created: false, message: "Ein Buch mit dieser ISBN existiert bereits." },
+          null,
+          2,
+        );
+      }
+
+      throw error;
+    }
   },
 );
 
