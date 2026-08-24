@@ -1,19 +1,8 @@
 import { useEffect, useState } from "react";
 import type { ApiAuthor } from "@/lib/booksApi";
+import { OPEN_LIBRARY_FIELDS, type OpenLibraryResponse } from "@/lib/openLibrary";
 import type { OpenLibraryBook } from "./useOpenLibrarySearch";
 
-type BookSuggestionsDoc = {
-  key: string;
-  title: string;
-  author_name?: string[];
-  first_publish_year?: number;
-  isbn?: string[];
-  cover_i?: number;
-};
-
-type OpenLibraryResponse = {
-  docs: BookSuggestionsDoc[];
-};
 const normalizeTitle = (value: string) => value.trim().toLowerCase();
 
 export function useBookSuggestions(authors: ApiAuthor[], ownedTitles: string[]) {
@@ -40,7 +29,7 @@ export function useBookSuggestions(authors: ApiAuthor[], ownedTitles: string[]) 
       try {
         const fetchPromise = authorKey.split("|").map((authorName) => {
           const encodedName = encodeURIComponent(authorName);
-          const url = `https://openlibrary.org/search.json?author=${encodedName}&limit=10&fields=key,title,author_name,first_publish_year,isbn,cover_i`;
+          const url = `https://openlibrary.org/search.json?author=${encodedName}&limit=10&fields=${OPEN_LIBRARY_FIELDS}`;
 
           return fetch(url).then((res) => {
             if (!res.ok) {

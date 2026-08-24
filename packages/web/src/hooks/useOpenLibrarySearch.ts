@@ -1,4 +1,9 @@
 import { useEffect, useState } from "react";
+import {
+  OPEN_LIBRARY_FIELDS,
+  type OpenLibraryDoc,
+  type OpenLibraryResponse,
+} from "@/lib/openLibrary";
 
 export type OpenLibraryBook = {
   key: string;
@@ -9,14 +14,6 @@ export type OpenLibraryBook = {
   coverUrl?: string;
 };
 
-type OpenLibraryBookDoc = {
-  key: string;
-  title: string;
-  author_name?: string[];
-  first_publish_year?: number;
-  isbn?: string[];
-  cover_i?: number;
-};
 /**
  * Hook für die Live-Suche in der OpenLibrary API.
  * Holt Buchtitel, Autoren, Erscheinungsjahre, ISBNs und generiert Cover-URLs.
@@ -42,11 +39,11 @@ export function useOpenLibrarySearch(query: string) {
         const response = await fetch(
           `https://openlibrary.org/search.json?title=${encodeURIComponent(
             query,
-          )}&limit=5&fields=key,title,author_name,first_publish_year,isbn,cover_i`,
+          )}&limit=5&fields=${OPEN_LIBRARY_FIELDS}`,
         );
-        const data = await response.json();
+        const data: OpenLibraryResponse = await response.json();
 
-        const formattedResults: OpenLibraryBook[] = data.docs.map((doc: OpenLibraryBookDoc) => ({
+        const formattedResults: OpenLibraryBook[] = data.docs.map((doc: OpenLibraryDoc) => ({
           key: doc.key,
           title: doc.title,
           authorName: doc.author_name?.[0],

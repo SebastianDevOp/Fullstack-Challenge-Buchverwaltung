@@ -6,6 +6,7 @@ import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -72,6 +73,7 @@ class BookController(val bookRepository: BookRepository, val authorRepository: A
 
         @PostMapping
         @ResponseStatus(HttpStatus.CREATED)
+        @Transactional
         fun createBook(@Valid @RequestBody request: CreateBookRequest): BookDto {
 
                 val author: Author? = authorRepository.findAuthorById(request.authorId!!)
@@ -88,6 +90,7 @@ class BookController(val bookRepository: BookRepository, val authorRepository: A
         }
 
         @PutMapping("/{id}")
+        @Transactional
         fun updateBook(
                 @PathVariable("id") id: Int,
                 @Valid @RequestBody request: UpdateBookRequest
@@ -116,6 +119,7 @@ class BookController(val bookRepository: BookRepository, val authorRepository: A
 
         @DeleteMapping("/{id}")
         @ResponseStatus(HttpStatus.NO_CONTENT)
+        @Transactional
         fun deleteBook(@PathVariable("id") id: Int) {
 
                 val bookToDelete: Book? = bookRepository.findBookById(id)
