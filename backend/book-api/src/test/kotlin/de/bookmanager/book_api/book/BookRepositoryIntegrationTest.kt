@@ -60,12 +60,7 @@ class BookRepositoryIntegrationTest {
         val author = authorRepository.save(Author(name = "Andrzej Sapkowski"))
         bookRepository.saveAndFlush(Book(title = "Der letzte Wunsch", author = author))
 
-        val treffer =
-                bookRepository.findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(
-                        "sapkowski",
-                        "sapkowski",
-                        PageRequest.of(0, 20)
-                )
+        val treffer = bookRepository.searchByTitleOrAuthorName("%sapkowski%", PageRequest.of(0, 20))
 
         assertThat(treffer.content.map { it.title }).contains("Der letzte Wunsch")
     }
