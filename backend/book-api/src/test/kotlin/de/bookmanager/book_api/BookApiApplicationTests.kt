@@ -15,7 +15,7 @@ class BookApiApplicationTests {
 		@Container
 		@ServiceConnection
 		@JvmStatic
-		val postgres = PostgreSQLContainer("postgres:17").withInitScript("schema.sql")
+		val postgres = PostgreSQLContainer("postgres:17")
 	}
 
 	@Test
