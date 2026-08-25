@@ -1,0 +1,10 @@
+.git
+.gitignore
+.gitattributes
+/build
+.gradle/
+.kotlin/
+HELP.md
+.env
+*.env
+**/*secret*
