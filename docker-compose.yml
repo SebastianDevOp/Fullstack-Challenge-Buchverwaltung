@@ -23,6 +23,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  recommendations:
+    build: backend/recommendation-service
+    ports:
+      - "8081:8081"
 
 volumes:
   pgdata:

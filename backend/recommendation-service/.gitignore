@@ -1,0 +1,8 @@
+target/
+project/target/
+.bloop/
+.metals/
+# Von Metals erzeugt
+project/metals.sbt
+project/project/
+.vscode/

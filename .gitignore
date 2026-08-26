@@ -8,3 +8,9 @@ node_modules/
 generated/
 dist/
 .turbo/
+
+# Scala / Metals
+.metals/
+.bloop/
+.scala-build/
+.vscode/

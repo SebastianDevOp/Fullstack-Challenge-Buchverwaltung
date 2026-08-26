@@ -8,3 +8,4 @@ HELP.md
 .env
 *.env
 **/*secret*
+
