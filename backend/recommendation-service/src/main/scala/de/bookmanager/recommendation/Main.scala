@@ -1,49 +1,15 @@
 package de.bookmanager.recommendation
 
 import org.apache.pekko.actor.typed.ActorSystem
-import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.http.scaladsl.Http
-import spray.json.DefaultJsonProtocol
-import spray.json.RootJsonFormat
-import scala.io.StdIn
-import scala.concurrent.ExecutionContext
-import org.apache.pekko.http.scaladsl.model.HttpRequest
-import scala.concurrent.Future
-import org.apache.pekko.http.scaladsl.model.HttpResponse
-import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshal
 import org.apache.pekko.http.scaladsl.marshallers.sprayjson.SprayJsonSupport.*
+import org.apache.pekko.http.scaladsl.model.StatusCodes
+import org.apache.pekko.http.scaladsl.server.Directives.*
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.io.StdIn
 import JsonFormats.{*, given}
-import org.apache.pekko.http.scaladsl.server.Route
-
-object JsonFormats extends DefaultJsonProtocol {
-  given RootJsonFormat[ApiBook] = jsonFormat6(ApiBook.apply)
-  given RootJsonFormat[ApiBookPage] = jsonFormat4(ApiBookPage.apply)
-  given RootJsonFormat[Recommendations] = jsonFormat1(
-    Recommendations.apply
-  )
-
-}
-
-case class ApiBook(
-    id: Int,
-    title: String,
-    isbn: Option[String],
-    year: Option[Int],
-    authorId: Int,
-    author: String
-)
-
-case class ApiBookPage(
-    data: List[ApiBook],
-    page: Int,
-    pageSize: Int,
-    total: Long
-)
-
-case class Recommendations(
-    titles: List[String]
-)
 
 @main def run(): Unit = {
 
@@ -51,12 +17,7 @@ case class Recommendations(
 
   given ExecutionContext = system.executionContext
 
-  val apiBase = sys.env.getOrElse("BOOKS_API_URL", "http://localhost:8080")
-
-  val response: Future[ApiBookPage] =
-    Http()
-      .singleRequest(HttpRequest(uri = apiBase + "/api/books?size=100"))
-      .flatMap(antwort => Unmarshal(antwort).to[ApiBookPage])
+  val response: Future[ApiBookPage] = BooksClient.ladeBuecher()
 
   response.foreach(seite => println(s"${seite.total} Bücher geholt"))
 
@@ -65,10 +26,36 @@ case class Recommendations(
   val route = path("recommendations") {
     get {
       onSuccess(response) { seite =>
-        complete(Recommendations(seite.data.map(_.title)))
+        complete(BookTitle(seite.data.map(_.title)))
       }
     }
-  }
+  } ~
+    path("recommendations" / IntNumber) { id =>
+      get {
+        onSuccess(response) { seite =>
+          seite.data.find(_.id == id) match
+            case Some(buch) =>
+              val idf = berechneIDF(seite.data)
+              val zielVektor = berechneVektor(buch, idf)
+              complete(
+                (RecommendationResponse(
+                  seite.data
+                    .filter(_.id != id)
+                    .map(b =>
+                      Recommendation(
+                        b.title,
+                        kosinus(zielVektor, berechneVektor(b, idf))
+                      )
+                    )
+                    .sortBy(-_.similarity)
+                    .take(5)
+                ))
+              )
+            case None => complete(StatusCodes.NotFound)
+
+        }
+      }
+    }
 
   val binding = Http().newServerAt("0.0.0.0", 8081).bind(route)
 
