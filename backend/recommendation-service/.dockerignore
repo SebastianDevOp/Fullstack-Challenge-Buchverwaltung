@@ -1,0 +1,11 @@
+**/target/
+project/target/
+**/.bloop/
+**/.metals/
+.gitignore
+.scalafmt.conf
+.vscode/
+Dockerfile.probe
+.env
+*.env
+**/*secret*
